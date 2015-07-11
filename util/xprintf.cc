@@ -9,7 +9,7 @@
 /   personal, non-profit or commercial products UNDER YOUR RESPONSIBILITY.
 / * Redistributions of source code must retain the above copyright notice.
 /
-/  ported to muddyOS by foreverbell <dql.foreverbell> at 2014/8/5.
+/  ported to BadAppleOS by foreverbell <dql.foreverbell@gmail.com> at 2014/8/5.
 /
 /-------------------------------------------------------------------------*/
 

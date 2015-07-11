@@ -20,7 +20,7 @@ Except some necessary booting code written in assembly, other code is purely wri
 
 # Toolchains
 
-It is developed under Windows, through I think it would also work under Linux.
+It is developed under Windows, though I think it would also work under Linux (Actually I have tested it under Ubuntu 14.0.2).
 
 The toolchains follow here, 
 
