@@ -12,7 +12,7 @@ extern uint8_t vdatas[] asm("_binary_vdata_bin_start");
 extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 
 video::video(void) {
-	printf("video raw data address = %d\n", (int) vdatas);
+	printf("video raw data address = %d.\n", (int) vdatas);
 	
 	cur_frame = count = 0;
 	pool = (uint16_t *) 0x300000;
@@ -20,6 +20,9 @@ video::video(void) {
 	uint8_t *raw_ptr = (uint8_t *) vdatas;
 	uint16_t *pool_ptr = pool;
 	uint16_t attrib;
+	
+	count = int(vdatae - vdatas) * 8 / 25 / 80;
+	printf("video frame count = %d.\n", count);
 	
 	while (raw_ptr < vdatae) {
 		uint8_t raw = *raw_ptr;
@@ -29,7 +32,6 @@ video::video(void) {
 			*pool_ptr++ = attrib;
 		}
 		++raw_ptr;
-		++count;
 	}
 }
 
