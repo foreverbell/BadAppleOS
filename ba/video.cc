@@ -35,7 +35,11 @@ video::video(void) {
 	}
 }
 
-bool video::has_next(void) {
+int video::progress(void) const {
+	return (cur_frame + 1) * 100 / count;
+}
+
+bool video::has_next(void) const {
 	return cur_frame < count;
 }
 

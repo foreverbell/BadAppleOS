@@ -23,6 +23,7 @@ void video_callback(uint64_t tick, int id) {
 	if (tick & 1) { // fps = 9
 		if (v.has_next()) {
 			v.next();
+			printf(" (%d%%) ", v.progress());
 		} else {
 			timer::remove(id);
 			console::clear();
