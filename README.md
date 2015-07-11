@@ -12,7 +12,7 @@ This operating system is quite rough, even it doesn't have a memory manager, tas
 
 At early year of 2011, I was inspired by some of my friends who were doing the similar things. Simultaneously I was learning something related to operating system, so I wrote something ugly which did the same thing as this repository, code still can be found [here](http://pan.baidu.com/s/1dDHEpwt).
 
-In the summer of 2014, I have some spare time, so I decide to relearn something of operating system. So I wrote some C++ code, but due to some reasons it had to be stopped. However, I realized that those rough code is sufficent for me to rewrite a BadAppleOS.
+In the summer of 2014, I have some spare time, so I decide to relearn something of operating system. As a consequence, I wrote some C++ code, but due to some reasons it had to be stopped. However, I realized that those rough code is sufficent for me to rewrite a BadAppleOS.
 
 # Highlight
 
@@ -22,7 +22,7 @@ Except some necessary booting code written in assembly, other code is purely wri
 
 It is developed under Windows, through I think it would also work under Linux.
 
-The toolchains follows here, 
+The toolchains follow here, 
 
 * gcc (4.9.2, x86\_64-pc-msys)
 * nasm (2.11.08)
@@ -32,6 +32,6 @@ I don't guarantee other versions of toolchains will work.
 
 # Usage
 
-See `makefile`, then create a new VMware virtual machine with the build `os.img` as floppy image.
+See `makefile`, then create a new VMware virtual machine (or other virtual machines) with the build `os.img` as floppy image.
 
 You can also burn it on your USB, and enjoy the BadApple on your real computer :)
