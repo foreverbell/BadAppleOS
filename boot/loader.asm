@@ -12,7 +12,7 @@ load_kernel_loop:
 	push cx
 	push dx
 	push bx
-	call read_sector
+	call read_sector  ; read sector cx to [dx*10h+bx]
 	add sp, 6
 	dec ax
 	add bx, 512
