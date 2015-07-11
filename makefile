@@ -2,7 +2,7 @@ OSIMG = os.img
 VIDEO_RAW = video.txt
 
 ASFLAGS = -f elf
-CCFLAGS = -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -Wall -Wextra
+CCFLAGS = -ffreestanding -fno-builtin -nostdlib -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -Wall -Wextra
 LDFLAGS = -T link.ld -mi386pe
 OCFLAGS = -Obinary
 
