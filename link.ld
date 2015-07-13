@@ -1,4 +1,5 @@
 ENTRY(start)
+STARTUP(init/entry/entry.o)
 SECTIONS
 {
 	. = 0x9000;

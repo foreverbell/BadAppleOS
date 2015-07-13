@@ -12,8 +12,8 @@ LD = ld
 OC = objcopy
 
 AS_OBJECTS := \
-	$(patsubst %.asm, %.o, $(wildcard init/*.asm)) \
-	$(patsubst %.asm, %.o, $(wildcard kernel/*.asm))
+	$(patsubst %.asm, %.o, $(wildcard kernel/*.asm)) \
+	$(patsubst %.asm, %.o, $(wildcard init/*.asm))
 
 CC_OBJECTS := \
 	$(patsubst %.cc, %.o, $(wildcard ba/*.cc)) \
@@ -31,7 +31,7 @@ $(OSIMG): boot.bin kernel.bin
 boot.bin: boot/boot.asm
 	$(AS) -o boot.bin boot/boot.asm
 	
-kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
+kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) vdata.o init/entry/entry.o
 	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
 	$(OC) $(OCFLAGS) kernel.out kernel.bin	
 	rm kernel.out
@@ -41,7 +41,10 @@ vdata.bin:
 
 vdata.o: vdata.bin
 	objcopy -B i386 -I binary -O elf32-i386 vdata.bin vdata.o
-	
+
+init/entry/entry.o: init/entry/entry.asm
+	$(AS) -o $@ $(ASFLAGS) $<
+
 $(AS_OBJECTS): %.o : %.asm
 	$(AS) -o $@ $(ASFLAGS) $<
 	
@@ -57,6 +60,7 @@ debug: $(OSIMG)
 clean:
 	rm ba/*.o
 	rm init/*.o
+	rm init/entry/*.o
 	rm kernel/*.o
 	rm mm/*.o
 	rm util/*.o
