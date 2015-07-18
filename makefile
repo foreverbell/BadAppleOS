@@ -27,7 +27,7 @@ clean:
 	cd boot && make clean && cd ..
 	cd middle && make clean && cd ..
 	cd kernel && make clean && cd ..
-	rm build/*.bin build/*.txt 
+	rm build/*.bin
 	rm $(OSIMG)
 
 .PHONY: all run clean dump

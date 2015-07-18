@@ -12,8 +12,8 @@ OC = objcopy
 
 all: middle.bin
 
-middle.bin: begin.o gdt.o memory.o
-	$(LD) -o middle.out $(LDFLAGS) gdt.o memory.o
+middle.bin: begin.o gdt.o mem.o print.o mem_detect.o
+	$(LD) -o middle.out $(LDFLAGS) gdt.o mem.o print.o mem_detect.o
 	$(OC) $(OCFLAGS) middle.out middle.bin
 	rm middle.out
 	python ../padding.py middle.bin 8192
@@ -24,9 +24,15 @@ begin.o: begin.asm
 
 gdt.o: gdt.asm
 	$(AS) -o gdt.o $(ASFLAGS) gdt.asm
-	
-memory.o: memory.cc
-	$(CC) -m32 -c -o memory.o $(CCFLAGS) memory.cc
+
+mem.o: mem.asm
+	$(AS) -o mem.o $(ASFLAGS) mem.asm
+
+print.o: print.asm
+	$(AS) -o print.o $(ASFLAGS) print.asm
+
+mem_detect.o: mem_detect.cc
+	$(CC) -m32 -c -o mem_detect.o $(CCFLAGS) mem_detect.cc
 
 clean:
 	rm *.o
