@@ -3,6 +3,7 @@ print:
 	mov bp, sp
 	pusha
 	mov bx, [bp+4]
+
 print_loop:
 	mov al, [bx]
 	cmp al, 0x0
@@ -11,6 +12,7 @@ print_loop:
 	int 0x10
 	inc bx
 	jmp print_loop
+
 print_fin:
 	; print '\n'
 	mov ah, 0x3

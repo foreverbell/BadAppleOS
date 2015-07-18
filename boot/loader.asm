@@ -1,33 +1,36 @@
-load_kernel:
+load:
+	push bp
+	mov bp, sp
 	pusha
 	
-	mov ax, sectors_to_read
+	mov ax, [bp + 4] ; sectors to read
 	xor bx, bx
-	mov dx, 0x900
-	mov cx, 1
+	mov dx, [bp + 6] ; load to where?
+	mov cx, [bp + 8] ; start sector
 
-load_kernel_loop:
+load_loop:
 	cmp ax, 0
-	je load_kernel_ok
+	je load_ok
 	push cx
 	push dx
 	push bx
-	call read_sector  ; read sector cx to [dx*10h+bx]
+	call read_sector
 	add sp, 6
 	dec ax
 	add bx, 512
 	inc cx
 	cmp bx, 0x1000
-	jne load_kernel_loop
+	jne load_loop
 	add dx, 0x100
 	xor bx, bx
-	jmp load_kernel_loop
+	jmp load_loop
 	
-load_kernel_ok:
+load_ok:
 	push disk_ok_msg
 	call print
 	add sp, 2
 	popa
+	pop bp
 	ret
 
 ; read a sector from the floppy drive.
@@ -53,6 +56,7 @@ read_sector:
 	mov [cylinder_index], ax
 
 	mov [number_retries], word 0
+	
 read_loop:
 	mov ax, [bp + 6]
 	mov es, ax
@@ -88,8 +92,6 @@ head_index dw 0
 cylinder_index dw 0
 number_retries dw 0
 
-sectors_to_read    equ 1024  ; 1024 sectors are sufficient
 sectors_per_track  equ 18
 total_heads        equ 2
 total_cylinders    equ 80
-

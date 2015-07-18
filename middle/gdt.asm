@@ -1,3 +1,9 @@
+[bits 16]
+
+[global gdt_descriptor]
+[global code_segment]
+[global data_segment]
+
 gdt_start:
 
 gdt_dummy:

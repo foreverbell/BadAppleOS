@@ -1,20 +1,24 @@
-[bits 16]
-[extern _kernel_init]
+[global begin]
 [extern _mem_detect]
-[global start]
+[extern gdt_descriptor]
+[extern code_segment]
+[extern data_segment]
 
 [section .text]
 
-start:
+[bits 16]
+
+begin:
 
 ; detect memory via int 0x15, eax=0xe820
 xor ax, ax
 mov es, ax
 push dword 128
 push dword 0x8004
-push word 0            ; HACK HACK
+push word 0            ; evil hack
 push mem_detect_ret
 jmp _mem_detect
+
 mem_detect_ret:
 add sp, 10
 cmp eax, 0x0
@@ -48,11 +52,8 @@ or eax, 0x1
 mov cr0, eax
 jmp dword code_segment : protected_mode
 
-; utilities
-%include "boot/print.asm"
-
-; gdt
-%include "init/gdt.asm"
+; utility
+%include "../boot/print.asm"
 
 [bits 32]
 
@@ -66,21 +67,12 @@ protected_mode:
 	mov gs, ax
 	mov ss, ax
 	; initialize kernel stack
-	mov ebp, stack_top
+	mov ebp, 0x10000
 	mov esp, ebp
-	; execute the C++ code
-	call _kernel_init
-loop:
-	hlt
-	jmp loop
-
-; stack
-[section .bss]
-	resb stack_size
-stack_top:
-
-stack_size equ 4096 ; the stack size is 4K
+	; execute kernel
+	jmp 0x10000
 
 [section .data]
+
 protected_mode_msg db "Switching to the protected mode.", 0
 mem_detect_err_msg db "Memory detection error! System halted.", 0

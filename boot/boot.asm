@@ -18,8 +18,18 @@ push booting_msg
 call print
 add sp, 2
 
-; load the kernel from disk
-call load_kernel
+; load middle to 0x9000, 16 sectors
+push 1
+push 0x900
+push 16
+call load
+add sp, 6
+
+; load kernel to 0x10000, 1024 sectors
+push 17
+push 0x1000
+push 1024
+call load
 
 ; give up control to kernel
 push kernel_msg
@@ -28,10 +38,10 @@ add sp, 2
 jmp 0x9000
 
 ; utilities
-%include "boot/print.asm"
+%include "print.asm"
 
 ; loader
-%include "boot/loader.asm"
+%include "loader.asm"
 
 boot_drive     db 0
 booting_msg    db "Booting from the 16-bit real mode.", 0

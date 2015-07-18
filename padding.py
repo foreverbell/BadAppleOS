@@ -4,12 +4,13 @@
 import os, sys
 
 img = sys.argv[1]
-size = os.path.getsize(img)
+tsize = int(sys.argv[2])
+fsize = os.stat(img).st_size
 
-print "The original size of", img, "is", size
+print "The original size of", img, "is", fsize
 
 f = open(img, "ab")
-padding = 1023 * 512 - size
+padding = tsize - fsize
 
 if (padding < 0) :
   print "Error!", img, "is too big!"

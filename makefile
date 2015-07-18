@@ -1,74 +1,33 @@
-OSIMG = os.img
-VIDEO_RAW = video.txt
-
-ASFLAGS = -f elf
-CCFLAGS = -ffreestanding -fno-builtin -nostdlib -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -Wall -Wextra
-LDFLAGS = -T link.ld -mi386pe
-OCFLAGS = -Obinary
-
-AS = nasm
-CC = g++
-LD = ld
-OC = objcopy
-
-AS_OBJECTS := \
-	$(patsubst %.asm, %.o, $(wildcard kernel/*.asm)) \
-	$(patsubst %.asm, %.o, $(wildcard init/*.asm))
-
-CC_OBJECTS := \
-	$(patsubst %.cc, %.o, $(wildcard ba/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard init/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard kernel/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard mm/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard util/*.cc))
+OSIMG = build/os.img
 
 all: $(OSIMG)
 
-$(OSIMG): boot.bin kernel.bin
-	cat boot.bin kernel.bin > $(OSIMG)
-	python padding.py $(OSIMG)
-	
-boot.bin: boot/boot.asm
-	$(AS) -o boot.bin boot/boot.asm
-	
-kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) vdata.o init/entry/entry.o
-	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
-	$(OC) $(OCFLAGS) kernel.out kernel.bin	
-	rm kernel.out
-	
-vdata.bin: 
-	python encode.py $(VIDEO_RAW) vdata.bin
+$(OSIMG): build/boot.bin build/middle.bin build/kernel.bin
+	cat build/boot.bin build/middle.bin build/kernel.bin > $(OSIMG)
 
-vdata.o: vdata.bin
-	objcopy -B i386 -I binary -O elf32-i386 vdata.bin vdata.o
-
-init/entry/entry.o: init/entry/entry.asm
-	$(AS) -o $@ $(ASFLAGS) $<
-
-$(AS_OBJECTS): %.o : %.asm
-	$(AS) -o $@ $(ASFLAGS) $<
+build/boot.bin:
+	cd boot && make && cd ..
 	
-$(CC_OBJECTS): %.o : %.cc
-	$(CC) -m32 -c -o $@ $(CCFLAGS) $<
-	
+build/middle.bin:
+	cd middle && make && cd ..
+
+build/kernel.bin:
+	cd kernel && make && cd ..
+
 run: $(OSIMG)
 	bochs -q -f bochsrc
 	
 debug: $(OSIMG)
 	bochsdbg -q -f bochsrc
 	
-clean:
-	rm ba/*.o
-	rm init/*.o
-	rm init/entry/*.o
-	rm kernel/*.o
-	rm mm/*.o
-	rm util/*.o
-	rm vdata.o
-	rm boot.bin kernel.bin vdata.bin $(OSIMG)
-	rm dump.txt
-	
 dump:
-	ndisasm -b32 -o9000h kernel.bin > dump.txt
+	ndisasm -b32 -o9000h build/kernel.bin > build/dump.txt
 	
+clean:
+	cd boot && make clean && cd ..
+	cd middle && make clean && cd ..
+	cd kernel && make clean && cd ..
+	rm build/*.bin build/*.txt 
+	rm $(OSIMG)
+
 .PHONY: all run clean dump

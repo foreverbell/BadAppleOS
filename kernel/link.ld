@@ -1,8 +1,8 @@
-ENTRY(start)
-STARTUP(init/entry/entry.o)
+ENTRY(begin)
+STARTUP(begin.o)
 SECTIONS
 {
-	. = 0x9000;
+	. = 0x10000;
 	.text :
 	{
 		code = .;
@@ -20,7 +20,6 @@ SECTIONS
 	}
 	.ctors :
 	{
-
 		___CTOR_LIST__ = .;
 		LONG((___CTOR_END__ - ___CTOR_LIST__) / 4 - 2)
 		*(.ctors)
