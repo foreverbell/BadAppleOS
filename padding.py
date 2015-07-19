@@ -14,6 +14,7 @@ padding = tsize - fsize
 
 if (padding < 0) :
   print "Error!", img, "is too big!"
+  exit(1)
 else :
   f.write(bytearray(padding))
   print "Padding", padding, "bytes"
