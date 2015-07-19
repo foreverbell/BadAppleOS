@@ -1,6 +1,5 @@
-[bits 16]
-
 [global print]
+[bits 16]
 
 print:
 	push bp

@@ -43,6 +43,9 @@ $(AS_OBJECTS): %.o : %.asm
 	
 $(CC_OBJECTS): %.o : %.cc
 	$(CC) -m32 -c -o $@ $(CCFLAGS) $<
+	
+dump:
+	ndisasm -b32 -oC0000000h kernel.bin > dump.txt
 
 clean:
 	rm begin.o vdata.o
@@ -52,4 +55,4 @@ clean:
 	rm util/*.o
 	rm kernel.bin vdata.bin
 
-.PHONY: all run clean
+.PHONY: all dump clean

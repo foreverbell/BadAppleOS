@@ -4,6 +4,8 @@
 [global code_segment]
 [global data_segment]
 
+[section .data]
+
 gdt_start:
 
 gdt_dummy:

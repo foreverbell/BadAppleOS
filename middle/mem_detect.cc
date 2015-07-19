@@ -1,7 +1,8 @@
 
-__asm__ (".code16\n");
+__asm__ (".code16gcc\n");
 
 #include "../kernel/include/stdint.h"
+#include "../kernel/include/linkage.h"
 
 /*
  * Structure of an entry (24 bytes long)
@@ -13,8 +14,7 @@ __asm__ (".code16\n");
 
 const uint32_t magic_number = 0x534D4150;
 
-extern "C" 
-int mem_detect_cc(uint8_t *buffer, uint32_t max_entries) {
+asmlinkage int mem_detect_cc(uint8_t *buffer, uint32_t max_entries) {
 	uint32_t flags = 0, entries = 0;
 	int signature, read_bytes;
 	uint32_t acpi, length_low, length_high;

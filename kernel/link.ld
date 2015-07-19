@@ -2,7 +2,7 @@ ENTRY(begin)
 STARTUP(begin.o)
 SECTIONS
 {
-	. = 0x10000;
+	. = 0xC0000000;
 	.text :
 	{
 		code = .;
