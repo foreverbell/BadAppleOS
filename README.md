@@ -16,7 +16,8 @@ In the summer of 2014, I have some spare time, so I decide to relearn something 
 
 # Highlight
 
-Except some necessary booting code written in assembly, other code is purely written in C++. I write some black magic to make some features of C++ like class and constructor work in my OS.
+* Mixing 16bit Assembly and C++ code in the middleware `middle` (switching to protected mode).
+* Except some necessary booting code written in Assembly, other code is purely written in C++. I write some black magic to make some features of C++ like class and constructor work in my OS.
 
 # Toolchains
 
