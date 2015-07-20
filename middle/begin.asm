@@ -12,10 +12,8 @@ begin:
 	call mem_detect
 	
 	; setup pde & pte (4 entries)
-	push dword begin2  ; check this article: https://sourceware.org/binutils/docs-2.20/as/i386_002d16bit.html
-	jmp _init_paging
-	
-begin2:
+	call dword _init_paging  ; check this article: https://sourceware.org/binutils/docs-2.20/as/i386_002d16bit.html
+
 	; display the protected mode message
 	push protected_mode_msg
 	call print

@@ -8,10 +8,7 @@ mem_detect:
 	mov es, ax
 	push dword 128
 	push dword 0x8004
-	push dword mem_detect_ret  ; see begin.asm
-	jmp _mem_detect_cc
-
-mem_detect_ret:
+	call dword _mem_detect_cc  ; see begin.asm
 	add sp, 8
 	cmp eax, 0x0
 	jge mem_detect_ok
