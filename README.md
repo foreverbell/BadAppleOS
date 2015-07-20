@@ -38,3 +38,7 @@ A runnable build can be found [here](https://github.com/foreverbell/miscellaneou
 To build, see `makefile`, then create a new VMware virtual machine (or other virtual machines) with the build `os.img` as floppy image.
 
 You can also burn it on your USB, and enjoy the BadApple on your real computer :)
+
+# License 
+
+MIT
