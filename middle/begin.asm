@@ -2,8 +2,8 @@
 [extern mem_detect]
 [extern _init_paging]
 [extern gdt_descriptor]
-[extern code_segment]
-[extern data_segment]
+[extern cseg]
+[extern dseg]
 [extern print]
 [bits 16]
 
@@ -15,7 +15,7 @@ begin:
 	call dword _init_paging  ; check this article: https://sourceware.org/binutils/docs-2.20/as/i386_002d16bit.html
 
 	; display the protected mode message
-	push protected_mode_msg
+	push pmode_msg
 	call print
 	add sp, 2
 
@@ -36,13 +36,13 @@ begin:
 	mov cr0, eax
 
 	; switch to protected mode
-	jmp dword code_segment : protected_mode
+	jmp dword cseg:pmode
 
 [bits 32]
 
-protected_mode:
+pmode:
 	; initialize segment registers
-	mov ax, data_segment
+	mov ax, dseg
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
@@ -56,4 +56,4 @@ protected_mode:
 
 [section .data]
 
-protected_mode_msg db "Switching to the protected mode.", 0
+pmode_msg db "Switching to the protected mode.", 0

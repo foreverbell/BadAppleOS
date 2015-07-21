@@ -1,8 +1,8 @@
 [bits 16]
 
 [global gdt_descriptor]
-[global code_segment]
-[global data_segment]
+[global cseg]
+[global dseg]
 
 [section .data]
 
@@ -34,5 +34,5 @@ gdt_descriptor:
 	dw gdt_end - gdt_start - 1  ; limit
 	dd gdt_start                ; base
 
-code_segment equ gdt_code - gdt_start
-data_segment equ gdt_data - gdt_start
+cseg equ gdt_code - gdt_start   ; code segment
+dseg equ gdt_data - gdt_start   ; data segment
