@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <system.h>
+#include <port.h>
 #include <console.h>
 
 namespace console {

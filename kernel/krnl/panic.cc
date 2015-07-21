@@ -16,7 +16,8 @@ void panic(const char *what, int code) {
 	printf("Kernel panic!\n");
 	printf("\tMessage: %s\n\tCode: %d\n", what, code);
 	
-	__asm__ __volatile__ ("cli; hlt");
+	cpu::cli();
+	cpu::halt();
 }
 
 } /* panic */

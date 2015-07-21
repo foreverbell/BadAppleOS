@@ -1,3 +1,5 @@
+; load the kernel image to memory
+; parameters: start sector, destination, the number of sectors to read
 load:
 	push bp
 	mov bp, sp
@@ -26,9 +28,6 @@ load_loop:
 	jmp load_loop
 	
 load_ok:
-	push disk_ok_msg
-	call print
-	add sp, 2
 	popa
 	pop bp
 	ret

@@ -30,9 +30,10 @@ push 17
 push 0x1000
 push 1024
 call load
+add sp, 6
 
 ; give up control to kernel
-push kernel_msg
+push disk_ok_msg
 call print
 add sp, 2
 jmp 0x9000
@@ -40,14 +41,13 @@ jmp 0x9000
 ; utilities
 %include "print.asm"
 
-; loader
-%include "loader.asm"
+; floppy reader
+%include "floppy.asm"
 
 boot_drive     db 0
 booting_msg    db "Booting from the 16-bit real mode.", 0
-kernel_msg     db "Transferring control to kernel.", 0
+disk_ok_msg    db "Kernel is successfully loaded, transferring control to kernel.", 0
 disk_error_msg db "Disk read error while loading kernel! System halted.", 0
-disk_ok_msg    db "Kernel is loaded at 0x9000.", 0
 
 times 510 - ($ - $$) db 0
 dw 0xaa55

@@ -9,9 +9,11 @@ extern void play(void);
 
 asmlinkage void kinitialize(void) {
 	
-	console::initialize(false); // We don't need cursor anyway
+	/* we don't need cursor anyway. */
+	console::initialize(false);
 	printf("Successfully landed to protected mode.\n");
 	
+	cpu::initialize();
 	gdt::initialize();
 	idt::initialize();
 	isr::initialize();
@@ -20,7 +22,8 @@ asmlinkage void kinitialize(void) {
 	mm::detect();
 	ctor::initialize();
 
-	__asm__ __volatile__ ("sti");
-
+	/* enable interrupt. */
+	cpu::sti(); 
+	
 	play();
 }
