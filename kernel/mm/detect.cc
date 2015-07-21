@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <memory.h>
 
-namespace memory {
+namespace mm {
 	
 #pragma pack(push, 1)
 struct smap_entry_t {
@@ -33,5 +33,4 @@ void detect(void) {
 	printf("total memory = %dMB\n", sum / 1024 / 1024); 
 }
 
-
-} /* memory */ 
+} /* mm */ 

@@ -87,4 +87,10 @@ bool remove(int);
 
 } /* timer */
 
+namespace ctor {
+
+void initialize(void);
+
+} /* ctor */
+
 #endif

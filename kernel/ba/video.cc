@@ -21,7 +21,7 @@ video::video(void) {
 	uint16_t *pool_ptr = pool;
 	uint16_t attrib;
 	
-	count = int(vdatae - vdatas) * 8 / 25 / 80;
+	count = int(vdatae - vdatas) * 8 / console::video_size;
 	printf("video frame count = %d.\n", count);
 	
 	while (raw_ptr < vdatae) {
@@ -46,7 +46,7 @@ bool video::has_next(void) const {
 }
 
 void video::next(void) {
-	console::bkcopy(pool + cur_frame * 25*80);
+	console::bkcopy(pool + cur_frame * console::video_size);
 	cur_frame += 1;
 }
 

@@ -1,10 +1,10 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
-namespace memory {
+namespace mm {
 
 void detect(void);
 
-} /* memory */
+} /* mm */
 
 #endif

@@ -3,11 +3,11 @@
 #include <console.h>
 #include <stdio.h>
 #include <linkage.h>
+#include <assert.h>
 
 extern void play(void);
-extern void __ctor(void);
 
-asmlinkage void kernel_init(void) {
+asmlinkage void kinitialize(void) {
 	
 	console::initialize(false); // We don't need cursor anyway
 	printf("Successfully landed to protected mode.\n");
@@ -17,11 +17,10 @@ asmlinkage void kernel_init(void) {
 	isr::initialize();
 	irq::initialize();
 	timer::initialize();
-	memory::detect();
-
-	__ctor();
+	mm::detect();
+	ctor::initialize();
 
 	__asm__ __volatile__ ("sti");
-	
+
 	play();
 }

@@ -14,11 +14,6 @@ namespace console {
  * x-----------x
  */
 
-const int video_address = 0xb8000;
-const int max_row = 25;
-const int max_column = 80;
-const int video_size = 25*80;
-
 static int cursorX, cursorY;
 static int attrib;
 static bool has_cursor;
@@ -56,7 +51,7 @@ static uint16_t *get_cell_ptr(int row, int col) {
 		return NULL;
 	}
 	int offset = col + row * max_column;
-	uint16_t *ret = (uint16_t *) video_address;
+	uint16_t *ret = (uint16_t *) video_base;
 	ret += offset;
 	return ret;
 }
@@ -65,8 +60,8 @@ static void scroll(void) {
 	uint16_t tofill = 0x20 | (attrib << 8);
 	int offset = max_column * 2;
 
-	uint16_t *ptr_first = (uint16_t *) video_address;
-	uint16_t *ptr_second = (uint16_t *) (video_address + offset);
+	uint16_t *ptr_first = (uint16_t *) video_base;
+	uint16_t *ptr_second = (uint16_t *) (video_base + offset);
 
 	for (int i = 0; i < video_size - max_column; ++i) {
 		*ptr_first++ = *ptr_second++;
@@ -76,8 +71,27 @@ static void scroll(void) {
 	}
 }
 
+int mkcolor(int fore, int back) {
+	return (back << 4) | fore;
+}
+
+void setcolor(int color, bool reset) {
+	if (reset) {
+		uint8_t *ptr = (uint8_t *) video_base;
+
+		ptr += 1;
+		for (int i = 0; i < video_size; ++i) {
+			*ptr = color;
+			ptr += 2;
+		}
+	}
+	attrib = color;
+}
+
 void initialize(bool cursor) {
 	has_cursor = cursor;
+	attrib = mkcolor(default_fore_color, default_back_color);
+	
 	if (!has_cursor) {
 		outportb(0x3d4, 0xe);
 		outportb(0x3d5, (2000 >> 8) & 0xff);
@@ -85,23 +99,13 @@ void initialize(bool cursor) {
 		outportb(0x3d5, 2000 & 0xff);
 	}
 	sync_cursor();
-	attrib = *((int8_t *) (video_address + 1 + video_size*2));
-}
-
-void set_color(int color) {
-	uint8_t *ptr = (uint8_t *) video_address;
-
-	ptr += 1;
-	for (int i = 0; i < video_size; ++i) {
-		*ptr = color;
-		ptr += 2;
-	}
-	attrib = color;
+	
+	setcolor(attrib, true);
 }
 
 void clear(void) {
 	uint16_t tofill = 0x20 | (attrib << 8);
-	uint16_t *ptr = (uint16_t *) video_address;
+	uint16_t *ptr = (uint16_t *) video_base;
 
 	for (int i = 0; i < video_size; ++i) {
 		*ptr++ = tofill;
@@ -112,7 +116,7 @@ void clear(void) {
 }
 
 void bkcopy(uint16_t *src) {
-	memcpy((void *) video_address, src, video_size*2);
+	memcpy((void *) video_base, src, video_size*2);
 	
 	cursorX = cursorY = 0;
 	update_cursor();

@@ -11,12 +11,12 @@ LD = ld
 OC = objcopy
 
 AS_OBJECTS := \
-	$(patsubst %.asm, %.o, $(wildcard kernel/*.asm))
+	$(patsubst %.asm, %.o, $(wildcard krnl/*.asm))
 
 CC_OBJECTS := \
+	$(patsubst %.cc, %.o, init.cc) \
 	$(patsubst %.cc, %.o, $(wildcard ba/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard init/*.cc)) \
-	$(patsubst %.cc, %.o, $(wildcard kernel/*.cc)) \
+	$(patsubst %.cc, %.o, $(wildcard krnl/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard mm/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard util/*.cc))
 
@@ -42,15 +42,14 @@ $(AS_OBJECTS): %.o : %.asm
 	$(AS) -o $@ $(ASFLAGS) $<
 	
 $(CC_OBJECTS): %.o : %.cc
-	$(CC) -m32 -c -o $@ $(CCFLAGS) $<
+	$(CC) -m32 -c -std=c++11 -o $@ $(CCFLAGS) $<
 	
 dump:
 	ndisasm -b32 -oC0000000h kernel.bin > dump.txt
 
 clean:
 	rm begin.o vdata.o
-	rm init/*.o
-	rm kernel/*.o
+	rm krnl/*.o
 	rm mm/*.o
 	rm util/*.o
 	rm kernel.bin vdata.bin

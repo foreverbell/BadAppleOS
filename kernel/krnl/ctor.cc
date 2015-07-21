@@ -1,8 +1,10 @@
 
 #include <stdint.h>
-
+	
 extern int32_t __INIT_ARRAY_LIST__;
 extern int32_t __CTOR_LIST__;
+
+namespace ctor {
 
 typedef void (* fn_ptr) (void);
 
@@ -17,7 +19,7 @@ static void walk_ctor(fn_ptr *lpfn_ptr) {
 	}
 }
 
-void __ctor(void) {
+void initialize(void) {
 	if (lpfn_inta_ptr != NULL) {
 		walk_ctor(lpfn_inta_ptr);
 	}
@@ -27,3 +29,4 @@ void __ctor(void) {
 	}
 }
 
+} /* ctor */
