@@ -25,6 +25,7 @@ void video_callback(uint64_t tick, int id) {
 			v.next();
 			printf(" (%d%%) ", v.progress());
 		} else {
+			v.free();
 			timer::remove(id);
 			console::clear();
 			printf("Thank you for watching!\n");

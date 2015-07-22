@@ -14,10 +14,17 @@ void panic(const char *what, int code) {
 	setcolor(mkcolor(red, black), false);
 	
 	printf("Kernel panic!\n");
-	printf("\tMessage: %s\n\tCode: %d\n", what, code);
+	if (what != NULL) {
+		printf("\tMessage: %s", what);
+	}
+	printf("\tCode: %d\n", code);
 	
 	cpu::cli();
 	cpu::halt();
+}
+
+void panic(const char *what) {
+	panic(what, 0);
 }
 
 } /* panic */

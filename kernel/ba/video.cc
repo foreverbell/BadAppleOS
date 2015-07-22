@@ -16,7 +16,8 @@ video::video(void) {
 
 	cur_frame = 0;
 	count = int(vdatae - vdatas) * 8 / console::video_size;
-	pool = (uint16_t *) malloc(count * console::video_size * 2);
+	// pool = (uint16_t *) malloc(count * console::video_size * 2);
+	pool = new uint16_t[count * console::video_size];
 	
 	printf("video frame count = %d.\n", count);
 	printf("video pool address = 0x%x.\n", (int) pool);
@@ -49,6 +50,11 @@ bool video::has_next(void) const {
 void video::next(void) {
 	console::bkcopy(pool + cur_frame * console::video_size);
 	cur_frame += 1;
+}
+
+void video::free(void) {
+	delete [] pool;
+	// free(pool);
 }
 
 } /* badapple */

@@ -8,9 +8,10 @@ namespace badapple {
 class video {
 public:
 	video();
-	int progress() const;
-	void next();
-	bool has_next() const;
+	int progress(void) const;
+	void next(void);
+	bool has_next(void) const;
+	void free(void);
 private:
 	uint16_t *pool;
 	int count, cur_frame;

@@ -4,6 +4,7 @@
 namespace panic {
 
 void panic(const char *, int);
+void panic(const char *);
 
 } /* panic */
 
