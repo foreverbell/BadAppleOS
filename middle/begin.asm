@@ -23,11 +23,6 @@ begin:
 	cli
 	lgdt [gdt_descriptor]
 
-	; enable A20 line
-	in al, 0x92
-	or al, 0x2
-	out 0x92, al
-
 	; enable paging & protected mode
 	mov eax, 0x1000  ; 0x1000 is the address of page directory entry
 	mov cr3, eax

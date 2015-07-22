@@ -18,6 +18,11 @@ push booting_msg
 call print
 add sp, 2
 
+; enable A20 line
+in al, 0x92
+or al, 0x2
+out 0x92, al
+	
 ; load middle to 0x9000, 16 sectors
 push 1
 push 0x900
