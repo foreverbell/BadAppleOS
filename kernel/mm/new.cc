@@ -12,11 +12,6 @@ void *operator new(size_t n) {
 	return p;
 }
 
-void operator delete(void *p) {
-	printf("[delete] pointer = 0x%x\n", (int) p);
-	return free(p);
-}
-
 void *operator new [](size_t n) {
 	void *p = malloc(n);
 	printf("[new] %d bytes, pointer = 0x%x\n", n, (int) p);
@@ -24,6 +19,11 @@ void *operator new [](size_t n) {
 		panic::panic("Bad alloc.");
 	}
 	return p;
+}
+
+void operator delete(void *p) {
+	printf("[delete] pointer = 0x%x\n", (int) p);
+	return free(p);
 }
 
 void operator delete [](void *p) {
