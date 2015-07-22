@@ -13,6 +13,8 @@ typedef unsigned long long uint64_t;
 typedef int intptr_t;
 typedef unsigned int uintptr_t;
 
+typedef int ptrdiff_t;
+
 typedef unsigned int size_t;
 
 #define NULL 0

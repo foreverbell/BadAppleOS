@@ -3,7 +3,7 @@
 #include <console.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <memory.h>
+#include <malloc.h>
 #include "video.h"
 
 namespace badapple {
@@ -13,16 +13,17 @@ extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 
 video::video(void) {
 	printf("video raw data address = 0x%x.\n", (int) vdatas);
+
+	cur_frame = 0;
+	count = int(vdatae - vdatas) * 8 / console::video_size;
+	pool = (uint16_t *) malloc(count * console::video_size * 2);
 	
-	cur_frame = count = 0;
-	pool = (uint16_t *) 0xC0400000;
-		
+	printf("video frame count = %d.\n", count);
+	printf("video pool address = 0x%x.\n", (int) pool);
+	
 	uint8_t *raw_ptr = (uint8_t *) vdatas;
 	uint16_t *pool_ptr = pool;
 	uint16_t attrib;
-	
-	count = int(vdatae - vdatas) * 8 / console::video_size;
-	printf("video frame count = %d.\n", count);
 	
 	while (raw_ptr < vdatae) {
 		uint8_t raw = *raw_ptr;
@@ -34,7 +35,7 @@ video::video(void) {
 		++raw_ptr;
 	}
 	
-	printf("video data loaded.\n");
+	printf("video data loaded, tailing pointer 0x%x.\n", (int) pool_ptr);
 }
 
 int video::progress(void) const {

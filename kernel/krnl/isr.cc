@@ -87,7 +87,8 @@ static void dispatcher(isr_context_t *ptr) {
 	printf("Exception: %s, with error code: %d\n", exception_message[ptr->exception], ptr->error_code);
 	printf("Registers:\n");
 	printf("\tcs=0x%x, ds=0x%x, es=0x%x, fs=0x%x, gs=0x%x, ss=0x%x\n", ptr->cs, ptr->ds, ptr->es, ptr->fs, ptr->gs, ptr->ss);
-	printf("\teax=0x%x, ebx=0x%x, ecx=0x%x, edx=0x%x, esp=0x%x, ebp=0x%x, esi=0x%x, edi=0x%x\n", ptr->eax, ptr->ebx, ptr->ecx, ptr->edx, ptr->esp, ptr->ebp, ptr->esi, ptr->edi);
+	printf("\teax=0x%x, ebx=0x%x, ecx=0x%x, edx=0x%x\n", ptr->eax, ptr->ebx, ptr->ecx, ptr->edx);
+	printf("\tesp=0x%x, ebp=0x%x, esi=0x%x, edi=0x%x\n", ptr->esp, ptr->ebp, ptr->esi, ptr->edi);
 	printf("\teip=0x%x, user_esp=0x%x, eflags=0x%x\n", ptr->eip, ptr->user_esp, ptr->eflags);
 	
 	printf("System halted.\n");

@@ -102,6 +102,7 @@ void initialize(bool cursor) {
 	sync_cursor();
 	
 	setcolor(attrib, true);
+	clear();
 }
 
 void clear(void) {
