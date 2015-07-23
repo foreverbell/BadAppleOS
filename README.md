@@ -6,7 +6,7 @@
 
 Displaying [BadApple](https://www.youtube.com/watch?v=VzEUeWnV73U) animation in the protected mode of a x86 operating system.
 
-This operating system is quite rough, even it doesn't have a memory manager, task scheduler and other more advance things.
+This operating system is quite rough, even it doesn't have a file system, task scheduler and other more advance things.
 
 # Motivation
 
