@@ -1,0 +1,59 @@
+#ifndef __PAIR__
+#define __PAIR__
+
+namespace std {
+
+template<typename type_1, typename type_2>
+struct pair {
+	typedef type_1 first_type;
+	typedef type_2 second_type;
+	
+	type_1 first;
+	type_2 second;
+	
+	pair() : first(), second() { }
+	
+	pair(const type_1 &a, const type_2 &b) : first(a), second(b) { }
+	
+	template<typename other_1, typename other_2>
+	pair(const pair<other_1, other_2> &p) : first(p.first), second(p.second) { }
+};
+
+template<typename type_1, typename type_2>
+inline bool operator == (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return x.first == y.first && x.second == y.second;
+}
+
+template<typename type_1, typename type_2>
+inline bool operator < (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return x.first < y.first || (!(y.first < x.first) && x.second < y.second);
+}
+
+template<typename type_1, typename type_2>
+inline bool operator != (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return !(x == y);
+}
+
+template<typename type_1, typename type_2>
+inline bool operator > (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return y < x;
+}
+
+template<typename type_1, typename type_2>
+inline bool operator <= (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return !(y < x);
+}
+
+template<typename type_1, typename type_2>
+inline bool operator >= (const pair<type_1, type_2> &x, const pair<type_1, type_2> &y) {
+	return !(x < y);
+}
+
+template<typename type_1, typename type_2>
+inline pair<type_1, type_2> make_pair(type_1 x, type_2 y) {
+	return pair<type_1, type_2>(x, y);
+}
+
+}
+
+#endif
