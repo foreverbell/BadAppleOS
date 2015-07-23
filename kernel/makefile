@@ -48,7 +48,7 @@ dump:
 	ndisasm -b32 -oC0000000h kernel.bin > dump.txt
 
 clean:
-	rm begin.o vdata.o
+	rm begin.o vdata.o init.o
 	rm krnl/*.o
 	rm mm/*.o
 	rm util/*.o
