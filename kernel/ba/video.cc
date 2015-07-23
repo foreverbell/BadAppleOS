@@ -3,7 +3,7 @@
 #include <console.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <malloc.h>
+#include <new>
 #include "video.h"
 
 namespace badapple {

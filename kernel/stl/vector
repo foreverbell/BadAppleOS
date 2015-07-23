@@ -3,7 +3,6 @@
 
 #include <allocator>
 #include <algorithm>
-#include <panic.h> // ?
 
 namespace std {
 
@@ -178,7 +177,7 @@ public:
     reference at(size_type pos)
     {
         if (pos >= vector_size)
-			panic::panic("[vector] invalid vector<T> subscript");
+			std::bad_alloc("[vector] invalid vector<T> subscript");
 
         return *(begin() + pos);
     }
@@ -186,7 +185,7 @@ public:
     const_reference at(size_type pos) const
     {
         if (pos >= vector_size)
-			panic::panic("[vector] invalid vector<T> subscript");
+			std::bad_alloc("[vector] invalid vector<T> subscript");
 
         return *(begin() + pos);
     }
@@ -197,6 +196,6 @@ private:
     allocator_type alloc;
 };
 
-}
+} /* std */
 
 #endif

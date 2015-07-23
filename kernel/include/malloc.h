@@ -16,16 +16,4 @@ void *realloc(void *, size_t);
 }
 #endif /* __cplusplus */
 
-
-void *operator new(size_t);
-void *operator new [](size_t);
-void operator delete(void *);
-void operator delete [](void *);
-
-/* placement new. */
-inline void *operator new(size_t, void *p)      { return p; }
-inline void *operator new [](size_t, void *p)   { return p; }
-inline void  operator delete(void *, void *)  { }
-inline void  operator delete [](void *, void *) { }
-
 #endif

@@ -8,6 +8,6 @@ void swap(value_type &a, value_type &b) {
     value_type t = a; a = b; b = t;
 }
 
-}
+} /* std */
 
 #endif

@@ -1,8 +1,7 @@
 #ifndef __ALLOCATOR__
 #define __ALLOCATOR__
 
-#include <malloc.h>
-#include <panic.h> // ?
+#include <new>
 
 namespace std {
 
@@ -31,15 +30,15 @@ struct allocator {
 		if (s == 0) {
 			return NULL;
 		}
-        pointer temp = (pointer) malloc(s * sizeof(T)); 
+        pointer temp = new T[s]; 
         if (temp == NULL) {
-			panic::panic("[allocator] Bad alloc.");
+			std::bad_alloc();
 		}
         return temp;
     }
 
     void deallocate(pointer p, size_type) {
-        free(p);
+		delete [] p;
     }
 
     size_type max_size() const { 
@@ -55,6 +54,6 @@ struct allocator {
     }
 };
 
-}
+} /* std */
 
 #endif
