@@ -13,7 +13,7 @@ using systime::get_systime;
 
 badapple::video v;
 
-void end_callback(uint64_t tick, int id) {
+void end_callback(uint64_t, int) {
 	systime_t *st = get_systime(NULL);
 	for (int i = 0; i < 41; ++i) { // 41 is length of next display text
 		console::putch('\b');

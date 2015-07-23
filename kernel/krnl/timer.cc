@@ -19,7 +19,7 @@ struct timer_callback_link_t {
 
 static uint64_t system_tick;
 
-static void handler(irq::irq_context_t *context_ptr) {
+static void handler(irq::irq_context_t * /*context_ptr*/) {
 	static uint32_t ticks = 0;
 
 	system_tick += 1;
