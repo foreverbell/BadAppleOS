@@ -52,6 +52,7 @@ void puts (					/* Put a string to the default device */
 {
 	while (*str)
 		putc(*str++);
+	putc('\n');
 }
 
 
@@ -111,7 +112,7 @@ void vprintf (
 			p = va_arg(arp, char*);
 			for (j = 0; p[j]; j++) ;
 			while (!(f & 2) && j++ < w) putc(' ');
-			puts(p);
+			while (*p) putc(*p++);
 			while (j++ < w) putc(' ');
 			continue;
 		case 'C' :					/* Character */
