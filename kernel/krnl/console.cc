@@ -117,8 +117,8 @@ void clear(void) {
 	update_cursor();
 }
 
-void bkcopy(uint16_t *src) {
-	memcpy((void *) video_base, src, video_size*2);
+void bkcopy(const uint16_t *src) {
+	memcpy((void *) video_base, (void *) src, video_size*2);
 	
 	cursorX = cursorY = 0;
 	update_cursor();

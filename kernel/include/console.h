@@ -38,7 +38,7 @@ int mkcolor(int, int);
 void setcolor(int, bool); // fore, back
 void initialize(bool);
 void clear(void);
-void bkcopy(uint16_t *);
+void bkcopy(const uint16_t *);
 void putch(char);
 
 } /* console */

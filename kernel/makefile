@@ -1,7 +1,7 @@
 VIDEO_RAW = ../video.txt
 
 ASFLAGS = -f elf
-CCFLAGS = -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
+CCFLAGS = -std=c++11 -O2 -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
 LDFLAGS = -T link.ld -mi386pe
 OCFLAGS = -Obinary
 
@@ -43,7 +43,7 @@ $(AS_OBJECTS): %.o : %.asm
 	$(AS) -o $@ $(ASFLAGS) $<
 	
 $(CC_OBJECTS): %.o : %.cc
-	$(CC) -m32 -c -std=c++11 -o $@ $(CCFLAGS) $<
+	$(CC) -m32 -c -o $@ $(CCFLAGS) $<
 	
 dump:
 	ndisasm -b32 -oC0000000h kernel.bin > dump.txt
