@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <systime.h>
+#include <vector>
+#include <pair>
 #include "video.h"
 
 using systime::systime_t;
