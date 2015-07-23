@@ -76,14 +76,14 @@ systime_t *get_systime(systime_t *in_ptr) {
 
 	if (~regB & 0x4) { 
 		/* detected BCD mode, convert to binary mode. */
-#define BCD_TO_BINART(x) (((x) & 0xf) + (((x) >> 4) * 10))
-		systime.second = BCD_TO_BINART(systime.second);
-		systime.minute = BCD_TO_BINART(systime.minute);
-		systime.hour = BCD_TO_BINART(systime.hour);
-		systime.day = BCD_TO_BINART(systime.day);
-		systime.month = BCD_TO_BINART(systime.month);
-		systime.year = BCD_TO_BINART(systime.year);
-#undef BCD_TO_BINART
+#define BCD_TO_BINARY(x) (((x) & 0xf) + (((x) >> 4) * 10))
+		systime.second = BCD_TO_BINARY(systime.second);
+		systime.minute = BCD_TO_BINARY(systime.minute);
+		systime.hour = BCD_TO_BINARY(systime.hour);
+		systime.day = BCD_TO_BINARY(systime.day);
+		systime.month = BCD_TO_BINARY(systime.month);
+		systime.year = BCD_TO_BINARY(systime.year);
+#undef BCD_TO_BINARY
 	}
 
 	/* convert 12 hour to 24 hour if necessary. */ 
@@ -92,7 +92,7 @@ systime_t *get_systime(systime_t *in_ptr) {
 	}
 
 	/* 2-digit to full 4-digit. */
-	systime.year += 2000; // I don't think my OS can live as far to 21xx.
+	systime.year += 2000; // I don't think my OS can live that far to 21xx.
 
 	if (in_ptr != NULL) {
 		in_ptr->second = systime.second;
