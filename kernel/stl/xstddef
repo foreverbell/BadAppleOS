@@ -3,14 +3,14 @@
 
 namespace std {
 
-template<class arg_1, typename arg_2, typename result>
+template<typename arg_1, typename arg_2, typename result>
 struct binary_function {
 	typedef arg_1 first_argument_type;
 	typedef arg_2 second_argument_type;
 	typedef result result_type;
 };
 	
-template<class type>
+template<typename type>
 struct less : public binary_function<type, type, bool> { // functor for operator<
 	bool operator()(const type &left, const type &right) const {
 		return left < right;
