@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <memory.h>
+#include <algorithm>
+
+using std::sort;
 
 namespace mm {
 	
@@ -18,19 +21,33 @@ static int entries_count;
 static smap_entry_t *entries;
 
 void detect(void) {
-	entries_count = (int) *(uint32_t *)0x8000;
-	entries = (smap_entry_t *)0x8004;
+	const char *spearate_l1 = "+------------+------------+------+------+";
+	const char *spearate_l2 = "+============+============+======+======+";
+	
+	entries_count = (int) *(uint32_t *) 0x8000;
+	entries = (smap_entry_t *) 0x8004;
 
-	printf("entries = %d\n", entries_count);
+	printf("Total memory entries = %d.\n", entries_count);
+	
+	/* std::sort doesn't rely on memory allocation. So it is guaranteed to be safe. */ 
+	sort(entries, entries + entries_count, [&](const smap_entry_t &a, const smap_entry_t &b) -> bool {
+		return a.base < b.base;
+	});
 	
 	int sum = 0;
 	
+	puts(spearate_l1);
+	puts("|    base    |   length   | type | free |");
+	puts(spearate_l2);
+	
 	for (int i = 0; i < entries_count; ++i) {
-		printf("base = %x, length = %x, type = %d, acpi = %d\n", 
-			(int) entries[i].base, (int) entries[i].length, entries[i].type, entries[i].acpi);
+		bool free = (entries[i].type == 1);
+		printf("| 0x%08x | 0x%08x |   %d  |   %c  |\n", 
+			(int) entries[i].base, (int) entries[i].length, entries[i].type, free ? 'Y' : 'N');
 		sum += entries[i].length;
 	}
-	printf("total memory = %dMB\n", sum / 1024 / 1024); 
+	puts(spearate_l1);
+	printf("Total memory = %dM.\n", sum / 1024 / 1024); 
 }
 
 } /* mm */ 
