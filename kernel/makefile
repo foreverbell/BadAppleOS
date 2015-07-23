@@ -49,6 +49,7 @@ dump:
 
 clean:
 	rm begin.o vdata.o init.o
+	rm ba/*.o
 	rm krnl/*.o
 	rm mm/*.o
 	rm util/*.o

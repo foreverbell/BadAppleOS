@@ -1,5 +1,5 @@
-#ifndef __NEW_H__
-#define __NEW_H__
+#ifndef __NEW__
+#define __NEW__
 
 #include <malloc.h>
 #include <stdio.h>
@@ -7,8 +7,7 @@
 
 namespace std {
 
-
-void bad_alloc(const char *what = NULL) {
+inline void bad_alloc(const char *what = NULL) {
 	if (what == NULL) {
 		panic::panic("Bad alloc.");
 	}
