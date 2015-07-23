@@ -6,26 +6,27 @@
 
 namespace std {
 
-template <typename value_type,
-    typename allocator_type = std::allocator <value_type> >
+template <typename type,
+    typename allocator_type = std::allocator <type> >
 class vector {
 public:
     typedef typename allocator_type::value_type
-        *iterator, *pointer, &reference;
+        value_type, *iterator, *pointer, &reference;
     typedef const typename allocator_type::value_type
         *const_iterator, *const_pointer, &const_reference;
+    typedef ptrdiff_t difference_type; 
     typedef typename allocator_type::size_type size_type;
 
     vector(size_type capacity = 8)
     {
         vector_size = 0; buff_size = capacity;
-        buff = (pointer)alloc.allocate(buff_size * sizeof(value_type));
+        buff = (pointer)alloc.allocate(buff_size * sizeof(type));
     }
 
-    vector(const vector <value_type> &v)
+    vector(const vector <type> &v)
     {
         vector_size = v.vector_size; buff_size = v.buff_size;
-        buff = (pointer)alloc.allocate(buff_size * sizeof(value_type));
+        buff = (pointer)alloc.allocate(buff_size * sizeof(type));
 
         for (size_type pos = 0; pos != vector_size; pos++)
             alloc.construct(&buff[pos], v.buff[pos]);
@@ -37,14 +38,14 @@ public:
         alloc.deallocate(buff, buff_size);
     }
 
-    void swap(vector <value_type> &v)
+    void swap(vector <type> &v)
     {
         std::swap(buff, v.buff);
         std::swap(vector_size, v.vector_size);
         std::swap(buff_size, v.buff_size);
     }
 
-    void assign(const vector <value_type> &v)
+    void assign(const vector <type> &v)
     {
         clear();
         insert(begin(), v.begin(), v.end());
@@ -60,7 +61,7 @@ public:
     {
         if (need <= buff_size) return;
 
-        vector <value_type> v(need);
+        vector <type> v(need);
         v.insert(v.begin(), begin(), end());
 
         swap(v);
@@ -142,7 +143,7 @@ public:
             erase(end() - (vector_size - newsize), end());
     }
 
-    void resize(size_type newsize) { resize(newsize, value_type()); }
+    void resize(size_type newsize) { resize(newsize, type()); }
 
     reference front() { return buff[0]; }
     reference back()  { return buff[vector_size - 1]; }
@@ -162,7 +163,7 @@ public:
     allocator_type get_allocator() const { return alloc; }
     size_type max_size() const { return alloc.max_size(); }
 
-    vector <value_type> & operator =(const vector <value_type> v)
+    vector <type> & operator =(const vector <type> v)
     {
         assign(v);
         return *this;
@@ -177,7 +178,7 @@ public:
     reference at(size_type pos)
     {
         if (pos >= vector_size)
-			std::bad_alloc("[vector] invalid vector<T> subscript");
+            std::bad_alloc("[vector] invalid vector<T> subscript");
 
         return *(begin() + pos);
     }
@@ -185,7 +186,7 @@ public:
     const_reference at(size_type pos) const
     {
         if (pos >= vector_size)
-			std::bad_alloc("[vector] invalid vector<T> subscript");
+            std::bad_alloc("[vector] invalid vector<T> subscript");
 
         return *(begin() + pos);
     }

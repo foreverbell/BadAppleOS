@@ -1,0 +1,34 @@
+#ifndef __XUTILITY__
+#define __XUTILITY__
+
+#include <stdlib.h>
+
+template<class iterator>
+struct iterator_traits {
+	// iterator_category not implemented
+	typedef typename iterator::value_type value_type;
+	typedef typename iterator::difference_type difference_type;
+	typedef difference_type distance_type;
+	typedef typename iterator::pointer pointer;
+	typedef typename iterator::reference reference;
+};
+
+template<class type>
+struct iterator_traits<type *> {
+	typedef type value_type;
+	typedef ptrdiff_t difference_type;
+	typedef ptrdiff_t distance_type;
+	typedef type *pointer;
+	typedef type &reference;
+};
+
+template<class type>
+struct iterator_traits<const type *> {
+	typedef type value_type;
+	typedef ptrdiff_t difference_type;
+	typedef ptrdiff_t distance_type;
+	typedef const type *pointer;
+	typedef const type &reference;
+};
+
+#endif
