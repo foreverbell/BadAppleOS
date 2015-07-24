@@ -11,6 +11,8 @@
 using systime::systime_t;
 using systime::get_systime;
 
+namespace {
+
 badapple::video v;
 
 void end_callback(uint64_t, int) {
@@ -35,6 +37,8 @@ void video_callback(uint64_t tick, int id) {
 			timer::add(end_callback);
 		}
 	}
+}
+
 }
 
 void play(void) {

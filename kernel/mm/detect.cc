@@ -8,6 +8,8 @@ using std::sort;
 
 namespace mm {
 	
+namespace {
+
 #pragma pack(push, 1)
 struct smap_entry_t {
 	uint64_t base;
@@ -17,8 +19,10 @@ struct smap_entry_t {
 } __attribute__((packed));
 #pragma pack(pop)
 
-static int entries_count;
-static smap_entry_t *entries;
+int entries_count;
+smap_entry_t *entries;
+
+}
 
 void detect(void) {
 	const char *spearate_l1 = "+------------+------------+------+------+";

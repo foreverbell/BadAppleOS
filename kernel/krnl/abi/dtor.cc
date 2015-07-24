@@ -14,10 +14,11 @@ using std::make_pair;
 using std::sort;
 
 typedef void (* fn_ptr) (void *);
+typedef pair<void *, int> atexit_info_t; // pobj, insert_index
 
 namespace abi {
-	
-typedef pair<void *, int> atexit_info_t; // pobj, insert_index
+
+namespace {
 
 struct atexit_t {
 	fn_ptr lpfn;
@@ -27,15 +28,15 @@ struct atexit_t {
 
 const int slot_size = 131; // prime
 
-static atexit_t *slot_header[slot_size] = {0};
-static size_t cur_insert_index;
+atexit_t *slot_header[slot_size] = {0};
+size_t cur_insert_index;
 
-static uint32_t hash(fn_ptr lpfn) {
+uint32_t hash(fn_ptr lpfn) {
 	return uint32_t(lpfn) * uint32_t(2654435761);
 }
 
 /* we don't need dso_handle actually. */
-static int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
+int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
 	printf("[cxa_atexit] register lpfn = 0x%x, pobj = 0x%x\n", lpfn, pobj);
 	
 	uint32_t h = hash(lpfn) % slot_size;
@@ -61,7 +62,7 @@ static int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
 	return 0;
 }
 
-static void cxa_finalize(fn_ptr lpfn) {
+void cxa_finalize(fn_ptr lpfn) {
 	if (lpfn != NULL) {
 		uint32_t h = hash(lpfn) % slot_size;
 		atexit_t *patexit = slot_header[h], *prev = NULL;
@@ -107,6 +108,8 @@ static void cxa_finalize(fn_ptr lpfn) {
 			it->first(it->second.first);
 		}
 	}
+}
+
 }
 
 } /* abi */

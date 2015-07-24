@@ -4,6 +4,8 @@
 
 namespace idt {
 
+namespace {
+
 #pragma pack(push, 1)
 struct idt_entry_t {
     uint16_t base_low;
@@ -28,11 +30,13 @@ struct idt_descriptior_t {
 
 const int max_idt_entry = 256;
 
-static idt_entry_t idt[max_idt_entry];
-static idt_descriptior_t idt_ptr;
+idt_entry_t idt[max_idt_entry];
+idt_descriptior_t idt_ptr;
 
-static void flush(void) {
+void flush(void) {
 	__asm__ __volatile__ ("lidt %0" :"=m"(idt_ptr));
+}
+
 }
 
 void set_gate(uint8_t index, uint32_t base, uint16_t sel, uint8_t flags) {

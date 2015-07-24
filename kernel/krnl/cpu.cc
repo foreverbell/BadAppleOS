@@ -4,7 +4,11 @@
 
 namespace cpu {
 	
-static int cli_count;
+namespace {
+	
+int cli_count;
+
+}
 
 void initialize(void) {
 	cli_count = 1;

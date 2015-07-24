@@ -7,6 +7,7 @@
 #include <linkage.h>
 
 asmlinkage {
+
 void irq_handler0();
 void irq_handler1();
 void irq_handler2();
@@ -23,14 +24,36 @@ void irq_handler12();
 void irq_handler13();
 void irq_handler14();
 void irq_handler15();
+
 }
 
 namespace irq {
 	
+namespace {
+	
 const int irq_vector_offset = 32;
 const int max_irq_entry = 16;
 
-static fn_irq_handler_t lpfn_irq_handler[max_irq_entry];
+fn_irq_handler_t lpfn_irq_handler[max_irq_entry];
+
+void dispatcher(irq_context_t *ptr) {
+	int irq_index = ptr->irq_index;
+	fn_irq_handler_t handler = lpfn_irq_handler[irq_index];
+
+	if (handler == NULL) {
+		printf("[IRQ dispatcher] Unhandled IRQ %d.\n", irq_index);
+	} else {
+		handler(ptr);
+	}
+
+	/* send an EOI (end of interrupt) to indicate that we are done. */
+	if (irq_index >= 8) {
+		outportb(0xa0, 0x20);
+	}
+	outportb(0x20, 0x20);
+}
+
+}
 
 void initialize(void) {
 	/* remap IRQ to proper IDT entries (32 ~ 47) */
@@ -113,23 +136,6 @@ void enable(int index) {
 	}
 	value = inportb(port) & ~(1 << index);
 	outportb(port, value);
-}
-
-static void dispatcher(irq_context_t *ptr) {
-	int irq_index = ptr->irq_index;
-	fn_irq_handler_t handler = lpfn_irq_handler[irq_index];
-
-	if (handler == NULL) {
-		printf("[IRQ dispatcher] Unhandled IRQ %d.\n", irq_index);
-	} else {
-		handler(ptr);
-	}
-
-	/* send an EOI (end of interrupt) to indicate that we are done. */
-	if (irq_index >= 8) {
-		outportb(0xa0, 0x20);
-	}
-	outportb(0x20, 0x20);
 }
 
 } /* irq */ 

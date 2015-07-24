@@ -43,9 +43,11 @@ pmode:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+	
 	; initialize kernel stack
 	mov ebp, 0x10000
 	mov esp, ebp
+	
 	; execute kernel
 	jmp 0xC0000000
 

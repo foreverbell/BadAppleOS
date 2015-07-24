@@ -7,7 +7,9 @@
 #include <systime.h>
 
 namespace timer {
-	
+
+namespace {
+
 const int max_timer_callback = 16;
 
 struct timer_callback_link_t {
@@ -17,9 +19,9 @@ struct timer_callback_link_t {
 	bool deleted;
 } timer_pool[max_timer_callback], *timer_head;
 
-static uint64_t system_tick;
+uint64_t system_tick;
 
-static void handler(irq::irq_context_t * /*context_ptr*/) {
+void handler(irq::irq_context_t * /*context_ptr*/) {
 	static uint32_t ticks = 0;
 
 	system_tick += 1;
@@ -52,6 +54,8 @@ static void handler(irq::irq_context_t * /*context_ptr*/) {
 		
 		ticks = 0;
 	}
+}
+
 }
 
 void initialize(void) {

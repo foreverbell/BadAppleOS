@@ -5,6 +5,8 @@
 
 namespace gdt {
 
+namespace {
+
 const int max_gdt_entry = 256;
 
 #pragma pack(push, 1)
@@ -23,10 +25,10 @@ struct gdt_descriptior_t {
 } __attribute__((packed));
 #pragma pack(pop)
 
-static gdt_entry_t gdt[max_gdt_entry];
-static gdt_descriptior_t gdt_ptr;
+gdt_entry_t gdt[max_gdt_entry];
+gdt_descriptior_t gdt_ptr;
 
-static void flush(void) {
+void flush(void) {
 	gdt_ptr.limit = sizeof(gdt) - 1;
 	gdt_ptr.base = (uint32_t) gdt;
 	/* 
@@ -45,6 +47,8 @@ static void flush(void) {
 		"movw %%ax, %%gs\n\t"
 		:"=m"(gdt_ptr)
 	);
+}
+
 }
 
 void set_gate(int index, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity) {

@@ -12,9 +12,9 @@ __asm__ (".code16gcc\n");
  * next dword: ACPI 3.0 Extended Attributes bitfield (optional).
  */
 
-const uint32_t magic_number = 0x534D4150;
-
 asmlinkage int mem_detect_cc(uint8_t *buffer, uint32_t max_entries) {
+	const uint32_t magic_number = 0x534D4150;
+	
 	uint32_t flags = 0, entries = 0;
 	int signature, read_bytes;
 	uint32_t acpi, length_low, length_high;

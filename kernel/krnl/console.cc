@@ -15,11 +15,13 @@ namespace console {
  * x-----------x
  */
 
-static int cursorX, cursorY;
-static int attrib;
-static bool has_cursor;
+namespace {
 
-static void update_cursor(void) {
+int cursorX, cursorY;
+int attrib;
+bool has_cursor;
+
+void update_cursor(void) {
 	if (has_cursor) {
 		int temp = cursorX * max_column + cursorY;
 
@@ -30,7 +32,7 @@ static void update_cursor(void) {
 	}
 }
 
-static void sync_cursor(void) {
+void sync_cursor(void) {
 	if (has_cursor) {
 		int offset = 0;
 
@@ -44,7 +46,7 @@ static void sync_cursor(void) {
 	}
 }
 
-static uint16_t *get_cell_ptr(int row, int col) {
+uint16_t *get_cell_ptr(int row, int col) {
 	if (row < 0 || row >= max_row) {
 		return NULL;
 	}
@@ -57,7 +59,7 @@ static uint16_t *get_cell_ptr(int row, int col) {
 	return ret;
 }
 
-static void scroll(void) {
+void scroll(void) {
 	uint16_t tofill = 0x20 | (attrib << 8);
 	int offset = max_column * 2;
 
@@ -70,6 +72,8 @@ static void scroll(void) {
 	for (int i = 0; i < max_column; ++i) {
 		*ptr_first++ = tofill;
 	}
+}
+
 }
 
 int mkcolor(int fore, int back) {

@@ -5,19 +5,23 @@
 extern int32_t __INIT_ARRAY_LIST__;
 extern int32_t __CTOR_LIST__;
 
-namespace abi {
-
 typedef void (* fn_ptr) (void);
 
-static fn_ptr *lpfn_inta_ptr = (fn_ptr *) &__INIT_ARRAY_LIST__;
-static fn_ptr *lpfn_ctor_ptr = (fn_ptr *) &__CTOR_LIST__;
+namespace abi {
 
-static void wkctor(fn_ptr *lpfn_ptr) {
+namespace {
+	
+fn_ptr *lpfn_inta_ptr = (fn_ptr *) &__INIT_ARRAY_LIST__;
+fn_ptr *lpfn_ctor_ptr = (fn_ptr *) &__CTOR_LIST__;
+
+void wkctor(fn_ptr *lpfn_ptr) {
 	int ctor_count = (int) (*lpfn_ptr);
 	
 	for (int i = 1; i <= ctor_count; ++i) {
 		(*(lpfn_ptr + i))();
 	}
+}
+
 }
 
 void ctors(void) {
