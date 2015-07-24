@@ -42,12 +42,15 @@ void detect(void) {
 	
 	for (int i = 0; i < entries_count; ++i) {
 		bool free = (entries[i].type == 1);
+		
+		if (free) {
+			sum += entries[i].length;
+		}
 		printf("| 0x%08x | 0x%08x |   %d  |   %c  |\n", 
 			(int) entries[i].base, (int) entries[i].length, entries[i].type, free ? 'Y' : 'N');
-		sum += entries[i].length;
 	}
 	puts(spearate_l1);
-	printf("Total memory = %dM.\n", sum / 1024 / 1024); 
+	printf("Total free memory = %dM.\n", sum / 1024 / 1024); 
 }
 
 } /* mm */ 

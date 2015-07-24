@@ -15,6 +15,7 @@ void initialize(void);
 void cli(void);
 void sti(void);
 void halt(void);
+void die(void);
 	
 } /* cpu */
 

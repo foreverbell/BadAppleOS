@@ -11,7 +11,7 @@ uint8_t * const kernel_mem_end   = (uint8_t *) 0xC0C00000;
 
 static uint8_t *pbreak = kernel_mem_begin;
 
-// implementation follows http://linux.die.net/man/2/sbrk
+// implementation follows http://linux.die.net/man/2/sbrk.
 void *sbrk(ptrdiff_t increment) {
 	auto ptr = pbreak;
 	

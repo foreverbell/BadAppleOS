@@ -5,7 +5,7 @@
 extern int32_t __INIT_ARRAY_LIST__;
 extern int32_t __CTOR_LIST__;
 
-namespace ABI {
+namespace abi {
 
 typedef void (* fn_ptr) (void);
 
@@ -30,4 +30,4 @@ void ctors(void) {
 	}
 }
 
-} /* ABI */
+} /* abi */

@@ -92,9 +92,7 @@ static void dispatcher(isr_context_t *ptr) {
 	printf("\teip=0x%x, user_esp=0x%x, eflags=0x%x\n", ptr->eip, ptr->user_esp, ptr->eflags);
 	
 	printf("System halted.\n");
-	
-	cpu::cli();
-	cpu::halt();
+	cpu::die();
 }
 
 } /* isr */ 

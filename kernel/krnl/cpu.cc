@@ -27,4 +27,10 @@ void halt(void) {
 	__asm__ __volatile__ ("hlt");
 }
 
+/* clear interrupts and halt. */
+void die(void) {
+	cli();
+	halt();
+}
+
 } /* cpu */

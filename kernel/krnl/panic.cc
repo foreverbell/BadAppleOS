@@ -19,8 +19,7 @@ void panic(const char *what, int code) {
 	}
 	printf("\tCode: %d\n", code);
 	
-	cpu::cli();
-	cpu::halt();
+	cpu::die();
 }
 
 void panic(const char *what) {

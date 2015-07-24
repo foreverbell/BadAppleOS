@@ -11,7 +11,7 @@ inline void swap(value_type &a, value_type &b) {
 	value_type t = a; a = b; b = t;
 }
 
-template <typename random_iterator, typename compare>
+template<typename random_iterator, typename compare>
 inline void _shiftd_heap(random_iterator root, random_iterator first, random_iterator last, compare comp) {
 	for (random_iterator cur = first, lch = (first - root) + first + 1; lch < last; ) {
 		random_iterator rch, to_swap = cur;
@@ -33,7 +33,7 @@ inline void _shiftd_heap(random_iterator root, random_iterator first, random_ite
 	}
 }
 
-template <typename random_iterator, typename compare>
+template<typename random_iterator, typename compare>
 inline void make_heap(random_iterator first, random_iterator last, compare comp) {
 	random_iterator cur = first + (last - first - 2) / 2;
 	while (cur >= first) {
@@ -41,18 +41,18 @@ inline void make_heap(random_iterator first, random_iterator last, compare comp)
 	}
 }
 
-template <typename random_iterator>
+template<typename random_iterator>
 inline void make_heap(random_iterator first, random_iterator last) {
 	make_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
 }
 
-template <typename random_iterator, typename compare>
+template<typename random_iterator, typename compare>
 inline void pop_heap(random_iterator first, random_iterator last, compare comp) {
 	swap(*first, *(last - 1));
 	_shiftd_heap(first, first, last - 1, comp);
 }
 
-template <typename random_iterator>
+template<typename random_iterator>
 inline void pop_heap(random_iterator first, random_iterator last) {
 	pop_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
 }

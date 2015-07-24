@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+namespace std {
+
 template<typename iterator>
 struct iterator_traits {
 	// iterator_category not implemented
@@ -30,5 +32,7 @@ struct iterator_traits<const type *> {
 	typedef const type *pointer;
 	typedef const type &reference;
 };
+
+} /* std */
 
 #endif

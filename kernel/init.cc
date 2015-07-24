@@ -20,7 +20,7 @@ asmlinkage void kinitialize(void) {
 	irq::initialize();
 	timer::initialize();
 	mm::detect();
-	ABI::ctors();
+	abi::ctors();
 
 	/* enable interrupt. */
 	cpu::sti(); 
