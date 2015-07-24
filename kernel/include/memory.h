@@ -3,7 +3,7 @@
 
 namespace mm {
 
-void detect(void);
+void initialize(void);
 
 } /* mm */
 

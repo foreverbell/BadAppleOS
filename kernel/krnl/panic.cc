@@ -13,11 +13,11 @@ namespace panic {
 void panic(const char *what, int code) {
 	setcolor(mkcolor(red, black), false);
 	
-	printf("Kernel panic!\n");
+	printf("Kernel panic, with");
 	if (what != NULL) {
-		printf("\tMessage: %s", what);
+		printf(" message: %s,", what);
 	}
-	printf("\tCode: %d\n", code);
+	printf(" code: %d\n", code);
 	
 	cpu::die();
 }

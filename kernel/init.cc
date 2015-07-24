@@ -15,11 +15,12 @@ asmlinkage void kinitialize(void) {
 	
 	cpu::initialize();
 	gdt::initialize();
+	mm::initialize();
 	idt::initialize();
 	isr::initialize();
 	irq::initialize();
 	timer::initialize();
-	mm::detect();
+	
 	abi::ctors();
 
 	/* enable interrupt. */
