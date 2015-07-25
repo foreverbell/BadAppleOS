@@ -1,5 +1,6 @@
 
 #include <system.h>
+#include <cpu_manipulate.h>
 #include <port.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -80,6 +81,8 @@ uint64_t get_system_tick(void) {
 }
 
 int add(fn_timer_callback_t lpfn_callback) {
+	cpu::int_guard guard;
+	
 	for (int i = 0; i < max_timer_callback; ++i) {
 		if (timer_pool[i].lpfn_timer_callback == NULL) {
 			timer_pool[i].deleted = false;
@@ -98,6 +101,8 @@ int add(fn_timer_callback_t lpfn_callback) {
 }
 
 bool remove(int identifier) {
+	cpu::int_guard guard;
+	
 	if (timer_pool[identifier].lpfn_timer_callback == NULL) {
 		return false;
 	}

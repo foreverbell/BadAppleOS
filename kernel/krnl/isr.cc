@@ -1,6 +1,7 @@
 
 #include <stdint.h>
 #include <system.h>
+#include <cpu_manipulate.h>
 #include <stdio.h>
 #include <linkage.h>
 

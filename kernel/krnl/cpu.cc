@@ -1,17 +1,19 @@
 
+#include <cpu_manipulate.h>
 #include <system.h>
+#include <panic.h>
 #include <assert.h>
 
 namespace cpu {
 	
 namespace {
 	
-int cli_count;
+int cli_count = 1;
 
 }
 
 void initialize(void) {
-	cli_count = 1;
+	/* empty stub */
 }
 
 void cli(void) {
@@ -35,6 +37,35 @@ void halt(void) {
 void die(void) {
 	cli();
 	halt();
+}
+
+/* impl of int_guard. */
+int_guard::int_guard() : cleared(false) {
+	acquire();
+}
+
+int_guard::~int_guard() {
+	release();
+}
+	
+void int_guard::acquire(void) {
+	if (cleared) {
+		panic::panic("[int_guard::acquire] Already acquired.");
+	}
+	cpu::cli();
+	cleared = true;
+}
+
+void int_guard::release(void) {
+	if (!cleared) {
+		panic::panic("[int_guard::release] Nothing to release.");
+	}
+	cleared = false;
+	cpu::sti();
+}
+
+bool int_guard::owns(void) const {
+	return cleared;
 }
 
 } /* cpu */

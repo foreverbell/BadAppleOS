@@ -1,6 +1,7 @@
 #include <system.h>
 #include <memory.h>
 #include <abi.h>
+#include <cpu_manipulate.h>
 #include <console.h>
 #include <stdio.h>
 #include <linkage.h>

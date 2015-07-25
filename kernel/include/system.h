@@ -9,16 +9,6 @@ void reboot(void);
 
 } /* power */
 
-namespace cpu {
-	
-void initialize(void);
-void cli(void);
-void sti(void);
-void halt(void);
-void die(void);
-	
-} /* cpu */
-
 namespace gdt {
 
 void initialize(void);
