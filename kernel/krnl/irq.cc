@@ -138,6 +138,24 @@ void enable(int index) {
 	outportb(port, value);
 }
 
+void disable_mask(int mask) {
+	for (int i = 0; i < 16; ++i) {
+		if (mask & 1) {
+			disable(i);
+		}
+		mask >>= 1;
+	}
+}
+
+void enable_mask(int mask) {
+	for (int i = 0; i < 16; ++i) {
+		if (mask & 1) {
+			enable(i);
+		}
+		mask >>= 1;
+	}
+}
+
 } /* irq */ 
 
 asmlinkage void irq_dispatcher(irq::irq_context_t *ptr) {

@@ -1,6 +1,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "sbrk.h"
 
 namespace mm {
 	
@@ -19,9 +20,9 @@ uint8_t *pbreak = kernel_mem_begin;
 void *sbrk(ptrdiff_t increment) {
 	auto ptr = pbreak;
 	
-	printf("[sbrk] increment: 0x%x\n", increment);
+	printf("[sbrk] increment: 0x%x.\n", increment);
 	if (increment < 0 || pbreak + increment > kernel_mem_end) {
-		printf("[sbrk] MFAIL\n");
+		puts("[sbrk] MFAIL.");
 		return MFAIL;
 	}
 	if (increment > 0) {

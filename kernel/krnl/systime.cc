@@ -20,13 +20,15 @@ int read_cmos(int reg) {
 	return inportb(cmos_data);
 }
 
-bool update_in_progress() {
+bool is_updating() {
 	int flag = read_cmos(0xa) & 0x80;
 	return (flag ? true : false);
 }
 
 void fill_systime(systime_t *in_ptr) {
-	while (update_in_progress());
+	while (is_updating()) {
+		__asm__ __volatile__ ("nop");
+	}
 	in_ptr->second = read_cmos(0x0);
 	in_ptr->minute = read_cmos(0x2);
 	in_ptr->hour = read_cmos(0x4);

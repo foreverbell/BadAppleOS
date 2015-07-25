@@ -1,12 +1,8 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
 #include <panic.h>
-#include <stdint.h>
-
-namespace mm {
-	
-void *sbrk(ptrdiff_t);
-
-} /* mm */
+#include "sbrk.h"
 
 #define fprintf(fd, format, args...) printf(format, ##args)
 
@@ -42,3 +38,5 @@ void *sbrk(ptrdiff_t);
 #ifndef MALLOC_FAILURE_ACTION
 #define MALLOC_FAILURE_ACTION
 #endif /* MALLOC_FAILURE_ACTION */
+
+#endif

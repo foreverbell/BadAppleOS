@@ -39,9 +39,24 @@ void initialize(void) {
 		return a.base < b.base;
 	});
 	
-	assert(1 + 1 < 2);
+	/* aligned by page size. */
 	for (int i = 0; i < descriptor_count; ++i) {
-		assert((descriptors[i].length >> 32) == 0);	 // fits in 32bit
+		uint64_t base = descriptors[i].base;
+		uint64_t length = descriptors[i].length;
+		
+		if (base & 0xfff) {
+			base = (base & ~0xfffll) + 0x1000;
+		}
+		if (length & 0xfff) {
+			length = length & ~0xfffll;
+		}
+		descriptors[i].base = base;
+		descriptors[i].length = length;
+	}
+	 
+	/* check if all lengths are below 4G, and memory ranges not overlap. */
+	for (int i = 0; i < descriptor_count; ++i) {
+		assert((descriptors[i].length >> 32) == 0);	
 		if (i != 0) {
 			assert(descriptors[i - 1].base + descriptors[i - 1].length <= descriptors[i].base);
 		}
@@ -54,7 +69,7 @@ void initialize(void) {
 	int sum = 0;
 	
 	for (int i = 0; i < descriptor_count; ++i) {
-		/* available RAM usable && upper memory. */
+		/* free iff type is available RAM usable && upper memory. */
 		bool free = (descriptors[i].type == 1 && descriptors[i].base >= 0x100000);
 		
 		if (free) {

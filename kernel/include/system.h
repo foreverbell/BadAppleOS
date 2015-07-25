@@ -55,8 +55,10 @@ typedef void (* fn_irq_handler_t)(irq_context_t *);
 void initialize(void);
 void install(int, fn_irq_handler_t);
 void uninstall(int);
-void enable(int index);
-void disable(int index);
+void enable(int);
+void disable(int);
+void enable_mask(int);
+void disable_mask(int);
 
 } /* irq */ 
 
