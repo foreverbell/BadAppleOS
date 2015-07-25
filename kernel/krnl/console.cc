@@ -23,15 +23,16 @@ namespace cursor {
 
 int X, Y;
 bool has;
+int vport; // base IO port for video, default 0x3d4
 
 void update(void) {
 	if (has) {
 		int temp = X * VIDEO_MAX_COLUMN + Y;
 
-		port::outb(0x3d4, 14);
-		port::outb(0x3d5, temp >> 8);
-		port::outb(0x3d4, 15);
-		port::outb(0x3d5, temp);
+		port::outb(vport, 14);
+		port::outb(vport | 1, temp >> 8);
+		port::outb(vport, 15);
+		port::outb(vport | 1, temp);
 	}
 }
 
@@ -39,10 +40,10 @@ void synchronize(void) {
 	if (has) {
 		int offset = 0;
 
-		port::outb(0x3d4, 14);
-		offset = port::inb(0x3d5) << 8;
-		port::outb(0x3d4, 15);
-		offset += port::inb(0x3d5);
+		port::outb(vport, 14);
+		offset = port::inb(vport | 1) << 8;
+		port::outb(vport, 15);
+		offset += port::inb(vport | 1);
 		
 		X = offset / VIDEO_MAX_COLUMN;
 		Y = offset % VIDEO_MAX_COLUMN;
@@ -99,14 +100,15 @@ void setcolor(int color, bool reset) {
 }
 
 void initialize(bool cursor) {
+	cursor::vport = *(uint16_t *) 0x463;
 	cursor::has = cursor;
 	attrib = mkcolor(default_fore_color, default_back_color);
 	
 	if (!cursor::has) {
-		port::outb(0x3d4, 0xe);
-		port::outb(0x3d5, (2000 >> 8) & 0xff);
-		port::outb(0x3d4, 0xf);
-		port::outb(0x3d5, 2000 & 0xff);
+		port::outb(cursor::vport, 0xe);
+		port::outb(cursor::vport | 1, (2000 >> 8) & 0xff);
+		port::outb(cursor::vport, 0xf);
+		port::outb(cursor::vport | 1, 2000 & 0xff);
 	}
 	cursor::synchronize();
 	
