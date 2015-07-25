@@ -8,11 +8,11 @@
 namespace console {
 
 /*
- * ------------> y (80)
- * |           |
- * |  console  |
- * |           |
- * x-----------x
+ * ------------------> y (80)
+ * | > _             |
+ * |     console     |
+ * |                 |
+ * x-----------------x (25)
  */
 
 namespace {
@@ -23,12 +23,12 @@ bool has_cursor;
 
 void update_cursor(void) {
 	if (has_cursor) {
-		int temp = cursorX * max_column + cursorY;
+		int temp = cursorX * VIDEO_MAX_COLUMN + cursorY;
 
-		outportb(0x3D4, 14);
-		outportb(0x3D5, temp >> 8);
-		outportb(0x3D4, 15);
-		outportb(0x3D5, temp);
+		port::outb(0x3d4, 14);
+		port::outb(0x3d5, temp >> 8);
+		port::outb(0x3d4, 15);
+		port::outb(0x3d5, temp);
 	}
 }
 
@@ -36,40 +36,40 @@ void sync_cursor(void) {
 	if (has_cursor) {
 		int offset = 0;
 
-		outportb(0x3D4, 14);
-		offset = inportb(0x3D5) << 8;
-		outportb(0x3D4, 15);
-		offset += inportb(0x3D5);
+		port::outb(0x3d4, 14);
+		offset = port::inb(0x3d5) << 8;
+		port::outb(0x3d4, 15);
+		offset += port::inb(0x3d5);
 		
-		cursorX = offset / max_column;
-		cursorY = offset % max_column;
+		cursorX = offset / VIDEO_MAX_COLUMN;
+		cursorY = offset % VIDEO_MAX_COLUMN;
 	}
 }
 
 uint16_t *get_cell_ptr(int row, int col) {
-	if (row < 0 || row >= max_row) {
+	if (row < 0 || row >= VIDEO_MAX_ROW) {
 		return NULL;
 	}
-	if (col < 0 || col > max_column) {
+	if (col < 0 || col > VIDEO_MAX_COLUMN) {
 		return NULL;
 	}
-	int offset = col + row * max_column;
-	uint16_t *ret = (uint16_t *) video_base;
+	int offset = col + row * VIDEO_MAX_COLUMN;
+	uint16_t *ret = (uint16_t *) VIDEO_BASE;
 	ret += offset;
 	return ret;
 }
 
 void scroll(void) {
 	uint16_t tofill = 0x20 | (attrib << 8);
-	int offset = max_column * 2;
+	int offset = VIDEO_MAX_COLUMN * 2;
 
-	uint16_t *ptr_first = (uint16_t *) video_base;
-	uint16_t *ptr_second = (uint16_t *) (video_base + offset);
+	uint16_t *ptr_first = (uint16_t *) VIDEO_BASE;
+	uint16_t *ptr_second = (uint16_t *) (VIDEO_BASE + offset);
 
-	for (int i = 0; i < video_size - max_column; ++i) {
+	for (int i = 0; i < VIDEO_SIZE - VIDEO_MAX_COLUMN; ++i) {
 		*ptr_first++ = *ptr_second++;
 	}
-	for (int i = 0; i < max_column; ++i) {
+	for (int i = 0; i < VIDEO_MAX_COLUMN; ++i) {
 		*ptr_first++ = tofill;
 	}
 }
@@ -82,10 +82,10 @@ int mkcolor(int fore, int back) {
 
 void setcolor(int color, bool reset) {
 	if (reset) {
-		uint8_t *ptr = (uint8_t *) video_base;
+		uint8_t *ptr = (uint8_t *) VIDEO_BASE;
 
 		ptr += 1;
-		for (int i = 0; i < video_size; ++i) {
+		for (int i = 0; i < VIDEO_SIZE; ++i) {
 			*ptr = color;
 			ptr += 2;
 		}
@@ -98,10 +98,10 @@ void initialize(bool cursor) {
 	attrib = mkcolor(default_fore_color, default_back_color);
 	
 	if (!has_cursor) {
-		outportb(0x3d4, 0xe);
-		outportb(0x3d5, (2000 >> 8) & 0xff);
-		outportb(0x3d4, 0xf);
-		outportb(0x3d5, 2000 & 0xff);
+		port::outb(0x3d4, 0xe);
+		port::outb(0x3d5, (2000 >> 8) & 0xff);
+		port::outb(0x3d4, 0xf);
+		port::outb(0x3d5, 2000 & 0xff);
 	}
 	sync_cursor();
 	
@@ -111,9 +111,9 @@ void initialize(bool cursor) {
 
 void clear(void) {
 	uint16_t tofill = 0x20 | (attrib << 8);
-	uint16_t *ptr = (uint16_t *) video_base;
+	uint16_t *ptr = (uint16_t *) VIDEO_BASE;
 
-	for (int i = 0; i < video_size; ++i) {
+	for (int i = 0; i < VIDEO_SIZE; ++i) {
 		*ptr++ = tofill;
 	}
 
@@ -122,7 +122,7 @@ void clear(void) {
 }
 
 void bkcopy(const uint16_t *src) {
-	memcpy((void *) video_base, (void *) src, video_size*2);
+	memcpy((void *) VIDEO_BASE, (void *) src, VIDEO_SIZE * 2);
 	
 	cursorX = cursorY = 0;
 	update_cursor();
@@ -150,11 +150,11 @@ void putch(char ch) {
 		*ptr = ch | (attrib << 8);
 		cursorY += 1;
 	}
-	if (cursorY >= max_column) {
+	if (cursorY >= VIDEO_MAX_COLUMN) {
 		cursorY = 0;
 		cursorX += 1;
 	}
-	while (cursorX >= max_row) {
+	while (cursorX >= VIDEO_MAX_ROW) {
 		scroll();
 		cursorX -= 1;
 	}

@@ -12,12 +12,14 @@ extern uint8_t vdatas[] asm("_binary_vdata_bin_start");
 extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 
 video::video(void) {
+	const uint16_t bkcolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
+	
 	printf("video raw data address = 0x%x.\n", (int) vdatas);
 
 	cur_frame = 0;
-	count = int(vdatae - vdatas) * 8 / console::video_size;
-	// pool = (uint16_t *) malloc(count * console::video_size * 2);
-	pool = new uint16_t[count * console::video_size];
+	count = int(vdatae - vdatas) * 8 / VIDEO_SIZE;
+	// pool = (uint16_t *) malloc(count * VIDEO_SIZE * 2);
+	pool = new uint16_t[count * VIDEO_SIZE];
 	
 	printf("video frame count = %d.\n", count);
 	printf("video pool address = 0x%x.\n", (int) pool);
@@ -29,7 +31,7 @@ video::video(void) {
 	while (raw_ptr < vdatae) {
 		uint8_t raw = *raw_ptr;
 		for (int i = 0; i < 8; ++i) {
-			attrib = (0xf << 8) | (raw & 1 ? ' ' : '*');
+			attrib = (bkcolor << 8) | (raw & 1 ? ' ' : '*');
 			raw = raw >> 1;
 			*pool_ptr++ = attrib;
 		}
@@ -48,7 +50,7 @@ bool video::has_next(void) const {
 }
 
 void video::next(void) {
-	console::bkcopy(pool + cur_frame * console::video_size);
+	console::bkcopy(pool + cur_frame * VIDEO_SIZE);
 	cur_frame += 1;
 }
 

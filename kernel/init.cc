@@ -13,7 +13,7 @@ asmlinkage void kinitialize(void) {
 	/* we don't need cursor anyway. */
 	console::initialize(false);
 	puts("Successfully landed to protected mode.");
-	
+
 	cpu::initialize();
 	gdt::initialize();
 	mm::initialize();

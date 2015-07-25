@@ -9,10 +9,10 @@ namespace {
 
 void * const MFAIL = (void *) ~(size_t(0));
 
-uint8_t * const kernel_mem_begin = (uint8_t *) 0xC0400000;
-uint8_t * const kernel_mem_end   = (uint8_t *) 0xC0C00000;
+#define KERNEL_MEM_BEGIN (void *) 0xC0400000
+#define KERNEL_MEM_END   (void *) 0xC0C00000
 
-uint8_t *pbreak = kernel_mem_begin;
+uint8_t *pbreak = (uint8_t *) KERNEL_MEM_BEGIN;
 
 }
 
@@ -21,7 +21,7 @@ void *sbrk(ptrdiff_t increment) {
 	auto ptr = pbreak;
 	
 	printf("[sbrk] increment: 0x%x.\n", increment);
-	if (increment < 0 || pbreak + increment > kernel_mem_end) {
+	if (increment < 0 || pbreak + increment > KERNEL_MEM_END) {
 		puts("[sbrk] MFAIL.");
 		return MFAIL;
 	}

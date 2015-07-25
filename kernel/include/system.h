@@ -11,6 +11,9 @@ void reboot(void);
 
 namespace gdt {
 
+#define KERNEL_CODE_SEL 0x8
+#define KERNEL_DATA_SEL 0x10
+
 void initialize(void);
 void set_gate(int, uint32_t, uint32_t, uint8_t, uint8_t);
 
@@ -54,11 +57,14 @@ void disable_mask(int);
 
 namespace timer {
 
+#define TIMER_TICK_ONE_SECOND 18
+#define TIMER_TICK_ONE_SHOT   0
+
 typedef void (* fn_timer_callback_t)(uint64_t, int);
 
 void initialize(void);
 uint64_t get_system_tick(void);
-int add(fn_timer_callback_t);
+int add(uint64_t, fn_timer_callback_t);
 bool remove(int);
 
 } /* timer */

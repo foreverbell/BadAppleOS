@@ -79,7 +79,7 @@ void dispatcher(isr_context_t *ptr) {
 }
 
 void initialize(void) {
-#define set_isr(n) idt::set_gate(n, (uint32_t) isr_handler##n, 0x8, 0x8e);
+#define set_isr(n) idt::set_gate(n, (uint32_t) isr_handler##n, KERNEL_CODE_SEL, 0x8e);
 	set_isr(0);
 	set_isr(1);
 	set_isr(2);

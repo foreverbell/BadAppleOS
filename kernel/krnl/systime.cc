@@ -3,38 +3,25 @@
 #include <port.h>
 #include <systime.h>
 
+using cmos::read;
+
 namespace systime {
 
 namespace {
 
-const int cmos_addr = 0x70;
-const int cmos_data = 0x71;
-
 systime_t systime;
 
-int read_cmos(int reg) {
-#ifdef NMI_DISABLE
-	reg |= (1 << 7);
-#endif
-	outportb(cmos_addr, reg);
-	return inportb(cmos_data);
-}
-
-bool is_updating() {
-	int flag = read_cmos(0xa) & 0x80;
-	return (flag ? true : false);
-}
-
-void fill_systime(systime_t *in_ptr) {
-	while (is_updating()) {
+void try_get(systime_t *in_ptr) {
+	/* check if CMOS is updating data. */
+	while (read(0xa) & 0x80) {
 		__asm__ __volatile__ ("nop");
 	}
-	in_ptr->second = read_cmos(0x0);
-	in_ptr->minute = read_cmos(0x2);
-	in_ptr->hour = read_cmos(0x4);
-	in_ptr->day = read_cmos(0x7);
-	in_ptr->month = read_cmos(0x8);
-	in_ptr->year = read_cmos(0x9);
+	in_ptr->second = read(0x0);
+	in_ptr->minute = read(0x2);
+	in_ptr->hour   = read(0x4);
+	in_ptr->day    = read(0x7);
+	in_ptr->month  = read(0x8);
+	in_ptr->year   = read(0x9);
 }
 
 }
@@ -42,35 +29,35 @@ void fill_systime(systime_t *in_ptr) {
 systime_t *get_systime(systime_t *in_ptr) {
 	systime_t cur_systime;
 
-	for (fill_systime(&systime); ; ) {
-		fill_systime(&cur_systime);
+	for (try_get(&systime); ; ) {
+		try_get(&cur_systime);
 		if (cur_systime == systime) {
 			break;
 		}
 		systime = cur_systime;
 	}
 
-	/* read registerB. */
-	int regB = read_cmos(0xb);
+	/* read status register B. */
+	int status_B = read(0xb);
 
 	/* read and clear 0x80 bit of hour. */
 	int hour_h8 = systime.hour & 0x80;
 	systime.hour &= ~0x80;
 
-	if (~regB & 0x4) { 
+	if (~status_B & 0x4) { 
 		/* detected BCD mode, convert to binary mode. */
 #define BCD_TO_BINARY(x) (((x) & 0xf) + (((x) >> 4) * 10))
 		systime.second = BCD_TO_BINARY(systime.second);
 		systime.minute = BCD_TO_BINARY(systime.minute);
-		systime.hour = BCD_TO_BINARY(systime.hour);
-		systime.day = BCD_TO_BINARY(systime.day);
-		systime.month = BCD_TO_BINARY(systime.month);
-		systime.year = BCD_TO_BINARY(systime.year);
+		systime.hour   = BCD_TO_BINARY(systime.hour);
+		systime.day    = BCD_TO_BINARY(systime.day);
+		systime.month  = BCD_TO_BINARY(systime.month);
+		systime.year   = BCD_TO_BINARY(systime.year);
 #undef BCD_TO_BINARY
 	}
 
 	/* convert 12 hour to 24 hour if necessary. */ 
-	if ((~regB & 0x2) && hour_h8) {
+	if ((~status_B & 0x2) && hour_h8) {
 		systime.hour = (systime.hour + 12) % 24;
 	}
 
@@ -80,10 +67,10 @@ systime_t *get_systime(systime_t *in_ptr) {
 	if (in_ptr != NULL) {
 		in_ptr->second = systime.second;
 		in_ptr->minute = systime.minute;
-		in_ptr->hour = systime.hour;
-		in_ptr->day = systime.day;
-		in_ptr->month = systime.month;
-		in_ptr->year = systime.year;
+		in_ptr->hour   = systime.hour;
+		in_ptr->day    = systime.day;
+		in_ptr->month  = systime.month;
+		in_ptr->year   = systime.year;
 
 		return in_ptr;
 	}

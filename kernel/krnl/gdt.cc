@@ -7,7 +7,7 @@ namespace gdt {
 
 namespace {
 
-const int max_gdt_entry = 256;
+#define MAX_GDT_ENTRY 256
 
 #pragma pack(push, 1)
 struct gdt_entry_t {
@@ -25,21 +25,18 @@ struct gdt_descriptior_t {
 } __attribute__((packed));
 #pragma pack(pop)
 
-gdt_entry_t gdt[max_gdt_entry];
+gdt_entry_t gdt[MAX_GDT_ENTRY];
 gdt_descriptior_t gdt_ptr;
 
 void flush(void) {
 	gdt_ptr.limit = sizeof(gdt) - 1;
 	gdt_ptr.base = (uint32_t) gdt;
-	/* 
-	 * 0x8  - offset to code segment;
-	 * 0x10 - offset to data segment.
-	 */
+
 	__asm__ __volatile__ (
 		"lgdt %0\n\t"
 		"ljmp $0x8, $1f\n\t" /* far jump to the code segment. */
 		"1:\n\t"
-		"movw $0x10, %%ax\n\t"
+		"movw $0x10, %%ax\n\t" /* set data segment. */
 		"movw %%ax, %%ds\n\t"
 		"movw %%ax, %%ss\n\t"
 		"movw %%ax, %%es\n\t"

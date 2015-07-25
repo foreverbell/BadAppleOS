@@ -30,11 +30,11 @@ void irq_handler15();
 namespace irq {
 	
 namespace {
-	
-const int irq_vector_offset = 32;
-const int max_irq_entry = 16;
 
-fn_irq_handler_t lpfn_irq_handler[max_irq_entry];
+#define IRQ_VECTOR_OFFSET 32
+#define MAX_IRQ_ENTRY     16
+
+fn_irq_handler_t lpfn_irq_handler[MAX_IRQ_ENTRY];
 
 void dispatcher(irq_context_t *ptr) {
 	int irq_index = ptr->irq_index;
@@ -48,29 +48,29 @@ void dispatcher(irq_context_t *ptr) {
 
 	/* send an EOI (end of interrupt) to indicate that we are done. */
 	if (irq_index >= 8) {
-		outportb(0xa0, 0x20);
+		port::outb(0xa0, 0x20);
 	}
-	outportb(0x20, 0x20);
+	port::outb(0x20, 0x20);
 }
 
 }
 
 void initialize(void) {
 	/* remap IRQ to proper IDT entries (32 ~ 47) */
-	outportb(0x20, 0x11);
-	outportb(0xa0, 0x11);
-	outportb(0x21, irq_vector_offset);     // vector offset for master PIC is 32
-	outportb(0xa1, irq_vector_offset + 8); // vector offset for slave PIC is 40
-	outportb(0x21, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
-	outportb(0xa1, 0x2);                   // tell slave PIC its cascade identity
-	outportb(0x21, 0x1);
-	outportb(0xa1, 0x1);
+	port::outb(0x20, 0x11);
+	port::outb(0xa0, 0x11);
+	port::outb(0x21, IRQ_VECTOR_OFFSET);     // vector offset for master PIC is 32
+	port::outb(0xa1, IRQ_VECTOR_OFFSET + 8); // vector offset for slave PIC is 40
+	port::outb(0x21, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
+	port::outb(0xa1, 0x2);                   // tell slave PIC its cascade identity
+	port::outb(0x21, 0x1);
+	port::outb(0xa1, 0x1);
 	/* disable all IRQs by default. */
-	outportb(0x21, 0xff);
-	outportb(0xa1, 0xff);
+	port::outb(0x21, 0xff);
+	port::outb(0xa1, 0xff);
 
-	/* initialize ISR to correct entries in the IDT.*/
-#define set_irq(n) idt::set_gate(n + irq_vector_offset, (uint32_t) irq_handler##n, 0x8, 0x8e);
+	/* initialize ISR to correct entries in the IDT. */
+#define set_irq(n) idt::set_gate(n + IRQ_VECTOR_OFFSET, (uint32_t) irq_handler##n, KERNEL_CODE_SEL, 0x8e);
 	set_irq(0);
 	set_irq(1);
 	set_irq(2);
@@ -119,8 +119,8 @@ void disable(int index) {
 		port = 0xa1;
 		index -= 8;
 	}
-	value = inportb(port) | (1 << index);
-	outportb(port, value);
+	value = port::inb(port) | (1 << index);
+	port::outb(port, value);
 }
 
 /* enable an IRQ by clearing mask. */
@@ -134,8 +134,8 @@ void enable(int index) {
 		port = 0xa1;
 		index -= 8;
 	}
-	value = inportb(port) & ~(1 << index);
-	outportb(port, value);
+	value = port::inb(port) & ~(1 << index);
+	port::outb(port, value);
 }
 
 void disable_mask(int mask) {

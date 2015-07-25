@@ -26,9 +26,9 @@ struct atexit_t {
 	atexit_t *next;
 };
 
-const int slot_size = 131; // prime
+#define SLOT_SIZE 131  // prime
 
-atexit_t *slot_header[slot_size] = {0};
+atexit_t *slot_header[SLOT_SIZE];
 size_t cur_insert_index;
 
 uint32_t hash(fn_ptr lpfn) {
@@ -39,7 +39,7 @@ uint32_t hash(fn_ptr lpfn) {
 int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
 	printf("[cxa_atexit] register lpfn = 0x%x, pobj = 0x%x\n", lpfn, pobj);
 	
-	uint32_t h = hash(lpfn) % slot_size;
+	uint32_t h = hash(lpfn) % SLOT_SIZE;
 	atexit_t *patexit = slot_header[h];
 	
 	while (patexit != NULL) {
@@ -64,7 +64,7 @@ int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
 
 void cxa_finalize(fn_ptr lpfn) {
 	if (lpfn != NULL) {
-		uint32_t h = hash(lpfn) % slot_size;
+		uint32_t h = hash(lpfn) % SLOT_SIZE;
 		atexit_t *patexit = slot_header[h], *prev = NULL;
 		
 		while (patexit != NULL) {
@@ -90,7 +90,7 @@ void cxa_finalize(fn_ptr lpfn) {
 		delete patexit;
 	} else {
 		vector<pair<fn_ptr, atexit_info_t>> all;
-		for (int i = 0; i < slot_size; ++i) {
+		for (int i = 0; i < SLOT_SIZE; ++i) {
 			atexit_t *p = slot_header[i];
 			while (p != NULL) {
 				for (auto &item : p->atexits) {

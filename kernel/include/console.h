@@ -5,10 +5,10 @@
 
 namespace console {
 
-const int video_base = 0xb8000;
-const int max_row = 25;
-const int max_column = 80;
-const int video_size = max_row * max_column;
+#define VIDEO_BASE        0xb8000
+#define VIDEO_MAX_ROW     25
+#define VIDEO_MAX_COLUMN  80
+#define VIDEO_SIZE        2000 // 25*80
 
 namespace vga_color {
 	
@@ -34,8 +34,8 @@ const int white = 15;
 const int default_back_color = vga_color::black;
 const int default_fore_color = vga_color::light_grey;
 
-int mkcolor(int, int);
-void setcolor(int, bool); // fore, back
+int mkcolor(int, int);  // fore, back
+void setcolor(int, bool);
 void initialize(bool);
 void clear(void);
 void bkcopy(const uint16_t *);

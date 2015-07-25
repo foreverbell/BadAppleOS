@@ -17,7 +17,7 @@ void panic(const char *what, int code) {
 	if (what != NULL) {
 		printf(" message: %s,", what);
 	}
-	printf(" code: %d\n", code);
+	printf(" code: %d.\n", code);
 	
 	cpu::die();
 }

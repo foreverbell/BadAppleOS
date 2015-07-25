@@ -5,7 +5,7 @@
 namespace power {
 
 void reboot(void) {
-	outportb(0x64, 0xfe);
+	port::outb(0x64, 0xfe);
 }
 
 } /* power */
