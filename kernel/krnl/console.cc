@@ -99,12 +99,11 @@ void setcolor(int color, bool reset) {
 	attrib = color;
 }
 
-void initialize(bool cursor) {
+void initialize(bool cursor, bool blink) {
 	cursor::vport = *(uint16_t *) 0x463;
 	cursor::has = cursor;
-	attrib = mkcolor(default_fore_color, default_back_color);
-	
-	if (!cursor::has) {
+	if (!cursor) {
+		/* disable cursor. */
 		port::outb(cursor::vport, 0xe);
 		port::outb(cursor::vport | 1, (2000 >> 8) & 0xff);
 		port::outb(cursor::vport, 0xf);
@@ -112,6 +111,14 @@ void initialize(bool cursor) {
 	}
 	cursor::synchronize();
 	
+	if (!blink) {
+		/* (undocumented) disable blinking text, see http://f.osdev.org/viewtopic.php?f=1&t=22632. */
+		port::inb(0x3da);
+		port::outb(0x3c0, 0x30);
+		port::outb(0x3c0, port::inb(0x3c1) & 0xf7);
+	}
+	
+	attrib = mkcolor(default_fore_color, default_back_color);
 	setcolor(attrib, true);
 	clear();
 }

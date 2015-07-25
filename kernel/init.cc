@@ -9,8 +9,8 @@
 extern void play(void);
  
 asmlinkage void kinitialize(void) {	
-	/* we don't need cursor anyway. */
-	console::initialize(false);
+	/* no cursor, and no blink text. */
+	console::initialize(false, false);
 	puts("Successfully landed to protected mode.");
 
 	cpu::initialize();
@@ -24,6 +24,6 @@ asmlinkage void kinitialize(void) {
 
 	/* enable interrupt. */
 	cpu::sti(); 
-
+	
 	play();
 }

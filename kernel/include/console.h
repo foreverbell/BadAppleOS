@@ -36,7 +36,7 @@ const int default_fore_color = vga_color::light_grey;
 
 int mkcolor(int, int);  // fore, back
 void setcolor(int, bool);
-void initialize(bool);
+void initialize(bool, bool);
 void clear(void);
 void bkcopy(const uint16_t *);
 void putch(char);

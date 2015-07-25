@@ -12,8 +12,13 @@ extern uint8_t vdatas[] asm("_binary_vdata_bin_start");
 extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 
 video::video(void) {
-	const uint16_t bkcolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
-	
+#ifdef VIDEO_SQUARE_TEXT
+	const uint16_t bkcolor1 = console::mkcolor(console::vga_color::white, console::vga_color::black);
+	const uint16_t bkcolor2 = console::mkcolor(console::vga_color::black, console::vga_color::white);
+#else
+	const uint16_t acolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
+#endif
+
 	printf("[video] Raw data address = 0x%x.\n", (int) vdatas);
 
 	cur_frame = 0;
@@ -31,14 +36,18 @@ video::video(void) {
 	while (raw_ptr < vdatae) {
 		uint8_t raw = *raw_ptr;
 		for (int i = 0; i < 8; ++i) {
-			attrib = (bkcolor << 8) | (raw & 1 ? ' ' : '*');
+#ifdef VIDEO_SQUARE_TEXT
+			attrib = (raw & 1 ? bkcolor1 : bkcolor2) << 8;
+#else
+			attrib = (acolor << 8) | (raw & 1 ? ' ' : '*');
+#endif
 			raw = raw >> 1;
 			*pool_ptr++ = attrib;
 		}
 		++raw_ptr;
 	}
 	
-	printf("[video] Data loaded, tailing pointer 0x%x.\n", (int) pool_ptr);
+	printf("[video] Data loaded, tailing pointer = 0x%x.\n", (int) pool_ptr);
 }
 
 int video::progress(void) const {
