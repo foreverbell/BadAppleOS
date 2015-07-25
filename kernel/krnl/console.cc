@@ -16,14 +16,17 @@ namespace console {
  */
 
 namespace {
-
-int cursorX, cursorY;
+	
 int attrib;
-bool has_cursor;
 
-void update_cursor(void) {
-	if (has_cursor) {
-		int temp = cursorX * VIDEO_MAX_COLUMN + cursorY;
+namespace cursor {
+
+int X, Y;
+bool has;
+
+void update(void) {
+	if (has) {
+		int temp = X * VIDEO_MAX_COLUMN + Y;
 
 		port::outb(0x3d4, 14);
 		port::outb(0x3d5, temp >> 8);
@@ -32,8 +35,8 @@ void update_cursor(void) {
 	}
 }
 
-void sync_cursor(void) {
-	if (has_cursor) {
+void synchronize(void) {
+	if (has) {
 		int offset = 0;
 
 		port::outb(0x3d4, 14);
@@ -41,10 +44,12 @@ void sync_cursor(void) {
 		port::outb(0x3d4, 15);
 		offset += port::inb(0x3d5);
 		
-		cursorX = offset / VIDEO_MAX_COLUMN;
-		cursorY = offset % VIDEO_MAX_COLUMN;
+		X = offset / VIDEO_MAX_COLUMN;
+		Y = offset % VIDEO_MAX_COLUMN;
 	}
 }
+
+} /* cursor */
 
 uint16_t *get_cell_ptr(int row, int col) {
 	if (row < 0 || row >= VIDEO_MAX_ROW) {
@@ -94,16 +99,16 @@ void setcolor(int color, bool reset) {
 }
 
 void initialize(bool cursor) {
-	has_cursor = cursor;
+	cursor::has = cursor;
 	attrib = mkcolor(default_fore_color, default_back_color);
 	
-	if (!has_cursor) {
+	if (!cursor::has) {
 		port::outb(0x3d4, 0xe);
 		port::outb(0x3d5, (2000 >> 8) & 0xff);
 		port::outb(0x3d4, 0xf);
 		port::outb(0x3d5, 2000 & 0xff);
 	}
-	sync_cursor();
+	cursor::synchronize();
 	
 	setcolor(attrib, true);
 	clear();
@@ -117,48 +122,48 @@ void clear(void) {
 		*ptr++ = tofill;
 	}
 
-	cursorX = cursorY = 0;
-	update_cursor();
+	cursor::X = cursor::Y = 0;
+	cursor::update();
 }
 
 void bkcopy(const uint16_t *src) {
 	memcpy((void *) VIDEO_BASE, (void *) src, VIDEO_SIZE * 2);
 	
-	cursorX = cursorY = 0;
-	update_cursor();
+	cursor::X = cursor::Y = 0;
+	cursor::update();
 }
 
 void putch(char ch) {
-	uint16_t *ptr = get_cell_ptr(cursorX, cursorY);
+	uint16_t *ptr = get_cell_ptr(cursor::X, cursor::Y);
 
 	if (ptr == NULL) {
 		return;
 	}
 
-	if (ch == '\b') { // backspace
-		if (cursorY != 0) {
-			cursorY -= 1;
+	if (ch == '\b') { // Backspace
+		if (cursor::Y != 0) {
+			cursor::Y -= 1;
 		}
-	} else if (ch == '\t') { // tab
-		cursorY = (cursorY + 4) & ~3;
-	} else if (ch == '\r') {
-		cursorY = 0;
-	} else if (ch == '\n') {
-		cursorY = 0;
-		cursorX += 1;
+	} else if (ch == '\t') { // Tab
+		cursor::Y = (cursor::Y + 4) & ~3;
+	} else if (ch == '\r') { // Carriage return
+		cursor::Y = 0;
+	} else if (ch == '\n') { // New Line
+		cursor::Y = 0;
+		cursor::X += 1;
 	} else {
 		*ptr = ch | (attrib << 8);
-		cursorY += 1;
+		cursor::Y += 1;
 	}
-	if (cursorY >= VIDEO_MAX_COLUMN) {
-		cursorY = 0;
-		cursorX += 1;
+	if (cursor::Y >= VIDEO_MAX_COLUMN) {
+		cursor::Y = 0;
+		cursor::X += 1;
 	}
-	while (cursorX >= VIDEO_MAX_ROW) {
+	while (cursor::X >= VIDEO_MAX_ROW) {
 		scroll();
-		cursorX -= 1;
+		cursor::X -= 1;
 	}
-	update_cursor();
+	cursor::update();
 }
 
 } /* console */

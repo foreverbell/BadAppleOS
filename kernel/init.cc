@@ -7,9 +7,8 @@
 #include <linkage.h>
 
 extern void play(void);
-
-asmlinkage void kinitialize(void) {
-	
+ 
+asmlinkage void kinitialize(void) {	
 	/* we don't need cursor anyway. */
 	console::initialize(false);
 	puts("Successfully landed to protected mode.");
@@ -21,7 +20,6 @@ asmlinkage void kinitialize(void) {
 	isr::initialize();
 	irq::initialize();
 	timer::initialize();
-	
 	abi::ctors();
 
 	/* enable interrupt. */

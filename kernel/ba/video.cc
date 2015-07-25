@@ -14,15 +14,15 @@ extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 video::video(void) {
 	const uint16_t bkcolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
 	
-	printf("video raw data address = 0x%x.\n", (int) vdatas);
+	printf("[video] Raw data address = 0x%x.\n", (int) vdatas);
 
 	cur_frame = 0;
 	count = int(vdatae - vdatas) * 8 / VIDEO_SIZE;
 	// pool = (uint16_t *) malloc(count * VIDEO_SIZE * 2);
 	pool = new uint16_t[count * VIDEO_SIZE];
 	
-	printf("video frame count = %d.\n", count);
-	printf("video pool address = 0x%x.\n", (int) pool);
+	printf("[video] Frame count = %d.\n", count);
+	printf("[video] Pool address = 0x%x.\n", (int) pool);
 	
 	uint8_t *raw_ptr = (uint8_t *) vdatas;
 	uint16_t *pool_ptr = pool;
@@ -38,7 +38,7 @@ video::video(void) {
 		++raw_ptr;
 	}
 	
-	printf("video data loaded, tailing pointer 0x%x.\n", (int) pool_ptr);
+	printf("[video] Data loaded, tailing pointer 0x%x.\n", (int) pool_ptr);
 }
 
 int video::progress(void) const {

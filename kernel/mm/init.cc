@@ -12,7 +12,7 @@ namespace mm {
 namespace {
 
 #pragma pack(push, 1)
-struct addr_descriptor_t {
+struct mm_descriptor_t {
 	uint64_t base;
 	uint64_t length;
 	uint32_t type;
@@ -21,7 +21,7 @@ struct addr_descriptor_t {
 #pragma pack(pop)
 
 int descriptor_count;
-addr_descriptor_t *descriptors;
+mm_descriptor_t *descriptors;
 
 }
 
@@ -30,12 +30,12 @@ void initialize(void) {
 	const char *spearate_l2 = "+============+============+======+======+";
 	
 	descriptor_count = (int) *(uint32_t *) 0x8000;
-	descriptors = (addr_descriptor_t *) 0x8004;
+	descriptors = (mm_descriptor_t *) 0x8004;
 
 	printf("Memory descriptor count = %d.\n", descriptor_count);
 	
 	/* std::sort doesn't rely on memory allocation. So it is guaranteed to be safe. */ 
-	sort(descriptors, descriptors + descriptor_count, [&](const addr_descriptor_t &a, const addr_descriptor_t &b) -> bool {
+	sort(descriptors, descriptors + descriptor_count, [&](const mm_descriptor_t &a, const mm_descriptor_t &b) -> bool {
 		return a.base < b.base;
 	});
 	

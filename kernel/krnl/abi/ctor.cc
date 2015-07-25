@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include <stdio.h>
 #include <abi.h>
 
 extern int32_t __INIT_ARRAY_LIST__;
@@ -14,24 +15,27 @@ namespace {
 fn_ptr *lpfn_inta_ptr = (fn_ptr *) &__INIT_ARRAY_LIST__;
 fn_ptr *lpfn_ctor_ptr = (fn_ptr *) &__CTOR_LIST__;
 
-void wkctor(fn_ptr *lpfn_ptr) {
-	int ctor_count = (int) (*lpfn_ptr);
-	
-	for (int i = 1; i <= ctor_count; ++i) {
-		(*(lpfn_ptr + i))();
+int wkctor(fn_ptr *lpfn_ptr) {
+	if (lpfn_ptr != NULL) {
+		int ctor_count = (int) (*lpfn_ptr);
+		for (int i = 1; i <= ctor_count; ++i) {
+			printf("[ctor] Calling 0x%x.\n", lpfn_ptr);
+			(*(lpfn_ptr + i))();
+		}
+		return ctor_count;
 	}
+	return 0;
 }
 
 }
 
 void ctors(void) {
-	if (lpfn_inta_ptr != NULL) {
-		wkctor(lpfn_inta_ptr);
-	}
+	int count = 0;
 	
-	if (lpfn_ctor_ptr != NULL) {
-		wkctor(lpfn_ctor_ptr);
-	}
+	puts("[ctor] Initializing.");
+	count += wkctor(lpfn_inta_ptr);
+	count += wkctor(lpfn_ctor_ptr);
+	printf("Total %d ctors initialized.\n", count);
 }
 
 } /* abi */
