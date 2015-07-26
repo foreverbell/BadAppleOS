@@ -1,6 +1,9 @@
 [global print]
 [bits 16]
 
+; @function: print
+; @brief: print a string to terminal.
+; @parameters: pointer to string is passed through SI.
 print:
 	pusha
 	mov bx, si

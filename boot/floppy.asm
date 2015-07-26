@@ -1,8 +1,8 @@
 ; @document: http://wiki.osdev.org/ATA_in_x86_RealMode_(BIOS).
 
 ; @function: detect
-; @brief: detect drive parameters via int 13h, ah=8h
-; @parameters: none
+; @brief: detect drive parameters via int 13h, ah=8h.
+; @parameters: none.
 detect:
 	pusha
 	xor ax, ax
@@ -27,8 +27,8 @@ detect_ok:
 	ret
 
 ; @function: load
-; @brief: load the kernel image to memory
-; @parameters: start sector, destination, the number of sectors to read
+; @brief: load the kernel image to memory.
+; @parameters: start sector, destination, the number of sectors to read.
 load:
 	push bp
 	mov bp, sp
@@ -63,7 +63,7 @@ load_ok:
 
 ; @function: read
 ; @brief: read a sector from the floppy drive.
-; @parameters: buffer offset, buffer segment, LBA
+; @parameters: buffer offset, buffer segment, LBA.
 read:
 	push bp
 	mov bp, sp
