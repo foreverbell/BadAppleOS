@@ -48,26 +48,26 @@ void dispatcher(irq_context_t *ptr) {
 
 	/* send an EOI (end of interrupt) to indicate that we are done. */
 	if (irq_index >= 8) {
-		port::outb(0xa0, 0x20);
+		port::outb(PORT_SLAVE_PIC_CMD, 0x20);
 	}
-	port::outb(0x20, 0x20);
+	port::outb(PORT_MASTER_PIC_CMD, 0x20);
 }
 
 }
 
 void initialize(void) {
 	/* remap IRQ to proper IDT entries (32 ~ 47) */
-	port::outb(0x20, 0x11);
-	port::outb(0xa0, 0x11);
-	port::outb(0x21, IRQ_VECTOR_OFFSET);     // vector offset for master PIC is 32
-	port::outb(0xa1, IRQ_VECTOR_OFFSET + 8); // vector offset for slave PIC is 40
-	port::outb(0x21, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
-	port::outb(0xa1, 0x2);                   // tell slave PIC its cascade identity
-	port::outb(0x21, 0x1);
-	port::outb(0xa1, 0x1);
+	port::outb(PORT_MASTER_PIC_CMD, 0x11);
+	port::outb(PORT_SLAVE_PIC_CMD, 0x11);
+	port::outb(PORT_MASTER_PIC_DAT, IRQ_VECTOR_OFFSET);     // vector offset for master PIC is 32
+	port::outb(PORT_SLAVE_PIC_DAT, IRQ_VECTOR_OFFSET + 8);  // vector offset for slave PIC is 40
+	port::outb(PORT_MASTER_PIC_DAT, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
+	port::outb(PORT_SLAVE_PIC_DAT, 0x2);                    // tell slave PIC its cascade identity
+	port::outb(PORT_MASTER_PIC_DAT, 0x1);
+	port::outb(PORT_SLAVE_PIC_DAT, 0x1);
 	/* disable all IRQs by default. */
-	port::outb(0x21, 0xff);
-	port::outb(0xa1, 0xff);
+	port::outb(PORT_MASTER_PIC_DAT, 0xff);
+	port::outb(PORT_SLAVE_PIC_DAT, 0xff);
 
 	/* initialize ISR to correct entries in the IDT. */
 #define set_irq(n) idt::set_gate(n + IRQ_VECTOR_OFFSET, (uint32_t) irq_handler##n, KERNEL_CODE_SEL, 0x8e);
@@ -114,9 +114,9 @@ void disable(int index) {
 	uint8_t value;
 
 	if (index < 8) {
-		port = 0x21;
+		port = PORT_MASTER_PIC_DAT;
 	} else {
-		port = 0xa1;
+		port = PORT_SLAVE_PIC_DAT;
 		index -= 8;
 	}
 	value = port::inb(port) | (1 << index);
@@ -129,9 +129,9 @@ void enable(int index) {
 	uint8_t value;
 
 	if (index < 8) {
-		port = 0x21;
+		port = PORT_MASTER_PIC_DAT;
 	} else {
-		port = 0xa1;
+		port = PORT_SLAVE_PIC_DAT;
 		index -= 8;
 	}
 	value = port::inb(port) & ~(1 << index);

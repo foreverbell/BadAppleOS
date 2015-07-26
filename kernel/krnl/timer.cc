@@ -78,7 +78,7 @@ void initialize(void) {
 	timer_head = 0;
 	
 	/* default tick rate, 18 ticks = 1 second. */
-	port::outb(PORT_PIT_COMMAND, 0x36);
+	port::outb(PORT_PIT_CMD, 0x36);
 	port::outb(PORT_PIT_CHANNEL0, 0);
 	port::outb(PORT_PIT_CHANNEL0, 0);
 
