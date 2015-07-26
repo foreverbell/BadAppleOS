@@ -1,12 +1,14 @@
 [org 0x7c00]
-
 [bits 16]
 
-; clear data segment
-xor ax, ax
-mov ds, ax
+jmp 0x0 : start_16
+start_16:
 
-; init the kernel stack
+; initialize segment registers & stack
+mov ax, cs
+mov ds, ax
+mov es, ax
+mov ss, ax
 mov bp, 0x8000
 mov sp, bp
 
@@ -14,9 +16,8 @@ mov sp, bp
 mov [boot_drive], dl
 
 ; display the booting message
-push booting_msg
+mov si, booting_msg
 call print
-add sp, 2
 
 call detect
 
@@ -37,18 +38,18 @@ add sp, 6
 ; check if magic number is correct
 mov ax, 0xc031
 cmp ax, [0x9000]
-je go
-push disk_fl_msg
-call print
-cli
-hlt
+jne disk_fatal
 
-go:
-	; give up control to kernel
-	push disk_ok_msg
+; jump to kernel
+mov si, disk_ok_msg
+call print
+jmp 0:0x9000
+
+disk_fatal:
+	mov si, disk_fl_msg
 	call print
-	add sp, 2
-	jmp 0x9000
+	cli
+	hlt
 
 ; utilities
 %include "print.asm"
@@ -57,10 +58,9 @@ go:
 %include "floppy.asm"
 
 boot_drive     db 0
-booting_msg    db "Booting...", 0
-detect_fl_msg  db "Detect drive parameters failed, use floppy as default.", 0
-disk_ok_msg    db "Kernel is loaded, jumping to kernel.", 0
-disk_fl_msg    db "Disk read error! System halted.", 0
+booting_msg    db "Booting.", 0
+disk_ok_msg    db "Kernel is loaded, jumping.", 0
+disk_fl_msg    db "Disk error.", 0
 
 times 510 - ($ - $$) db 0
 dw 0xaa55

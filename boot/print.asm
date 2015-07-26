@@ -1,8 +1,6 @@
 print:
-	push bp
-	mov bp, sp
 	pusha
-	mov bx, [bp + 4]
+	mov bx, si
 
 print_loop:
 	mov al, [bx]
@@ -23,5 +21,4 @@ print_fin:
 	mov ah, 0x2
 	int 0x10
 	popa
-	pop bp
 	ret

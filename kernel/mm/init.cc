@@ -66,7 +66,7 @@ void initialize(void) {
 	puts("|    base    |   length   | type | free |");
 	puts(spearate_l2);
 		
-	int sum = 0;
+	uint32_t sum = 0;
 	
 	for (int i = 0; i < descriptor_count; ++i) {
 		/* free iff type is available RAM usable && upper memory. */
@@ -76,10 +76,10 @@ void initialize(void) {
 			sum += descriptors[i].length;
 		}
 		printf("| 0x%08x | 0x%08x |   %d  |   %c  |\n", 
-			(int) descriptors[i].base, (int) descriptors[i].length, descriptors[i].type, free ? 'Y' : 'N');
+			(uint32_t) descriptors[i].base, (uint32_t) descriptors[i].length, descriptors[i].type, free ? 'Y' : 'N');
 	}
 	puts(spearate_l1);
-	printf("Total free memory = %dM.\n", sum / 1024 / 1024); 
+	printf("Total free memory = %uM.\n", sum / 1024 / 1024); 
 }
 
 } /* mm */ 

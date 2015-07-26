@@ -9,7 +9,7 @@
 
 begin:
 	; magic number
-	dd 0xc031
+	dw 0xc031
 
 	; enable A20 line
 	in al, 0x92
@@ -23,9 +23,8 @@ begin:
 	call dword _init_paging  ; check this article: https://sourceware.org/binutils/docs-2.20/as/i386_002d16bit.html
 
 	; display the protected mode message
-	push pmode_msg
+	mov si, pmode_msg
 	call print
-	add sp, 2
 
 	; load gdt
 	cli

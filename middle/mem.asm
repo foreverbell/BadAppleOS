@@ -14,7 +14,7 @@ mem_detect:
 	jge mem_detect_ok
 
 mem_detect_err:
-	push mem_detect_err_msg
+	mov si, mem_err_msg
 	call print
 	hlt
 
@@ -23,4 +23,4 @@ mem_detect_ok:
 	ret
 
 [section .data]
-mem_detect_err_msg db "Memory detection error! System halted.", 0
+mem_err_msg db "Memory detection error! System halted.", 0

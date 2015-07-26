@@ -12,12 +12,9 @@ detect:
 	mov dl, [boot_drive]
 	int 0x13
 	jnc detect_ok
-	push detect_fl_msg
-	call print
-	add sp, 2
 	popa
 	ret          ; use default floppy parameters
-	 
+
 detect_ok:
 	mov dl, dh
 	xor dh, dh
@@ -51,7 +48,7 @@ load_loop:
 	call read
 	add sp, 6
 	dec ax
-	add bx, 512
+	add bx, 0x200
 	inc cx
 	cmp bx, 0x1000
 	jne load_loop
@@ -84,14 +81,9 @@ read:
 	mov [head_index], dx
 	mov [cylinder_index], ax
 
-	mov [number_retries], word 0
-	
-read_loop:
-	mov ax, [bp + 6]
-	mov es, ax
-	mov dl, [boot_drive]
-	mov ah, 0x2
-	mov al, 0x1
+	mov [number_retries], byte 0
+
+	; read a sector
 	mov bx, [cylinder_index]
 	mov ch, bl
 	mov bx, [sector_index]
@@ -103,30 +95,36 @@ read_loop:
 	mov bx, [head_index]
 	mov dh, bl
 	mov bx, [bp + 4]
+	mov es, [bp + 6]
+	mov dl, [boot_drive]
+
+read_loop:
+	mov ah, 0x2
+	mov al, 0x1
 	int 0x13
 	jnc read_ok
 
-	inc word [number_retries]
-	cmp word [number_retries], 3  ; retry 3 times
-	jne read_loop
+	; reset disk drive
+	xor ax, ax
+	int 0x13
 
-	push disk_fl_msg
-	call print
-	cli
-	hlt
+	inc byte [number_retries]
+	cmp byte [number_retries], 5  ; retry 5 times
+
+	jne read_loop
+	jmp disk_fatal                ; see boot.asm
 
 read_ok:
 	popa
 	pop bp
 	ret
 
-sector_index   dw 0
-head_index     dw 0
-cylinder_index dw 0
-number_retries dw 0
+sector_index       dw 0
+head_index         dw 0
+cylinder_index     dw 0
+number_retries     db 0
 
-; floppy default value
+; floppy default value (place holder)
 sectors_per_track  dw 18
 total_heads        dw 2
 ; total_cylinders  dw 80   ; not need, actually
-
