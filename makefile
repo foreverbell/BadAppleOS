@@ -19,6 +19,7 @@ debug: $(OSIMG)
 	bochsdbg -q -f bochsrc
 	
 dump:
+	ndisasm -b16 -o7C00h boot/boot.bin > boot/dump.txt
 	ndisasm -b16 -o9000h middle/middle.bin > middle/dump.txt
 	ndisasm -b32 -oC0000000h kernel/kernel.bin > kernel/dump.txt
 	

@@ -1,5 +1,37 @@
-; load the kernel image to memory
-; parameters: start sector, destination, the number of sectors to read
+; @document: http://wiki.osdev.org/ATA_in_x86_RealMode_(BIOS).
+
+; @function: detect
+; @brief: detect drive parameters via int 13h, ah=8h
+; @parameters: none
+detect:
+	pusha
+	xor ax, ax
+	mov es, ax
+	mov di, ax
+	mov ah, 0x8
+	mov dl, [boot_drive]
+	int 0x13
+	jnc detect_ok
+	push detect_fl_msg
+	call print
+	add sp, 2
+	popa
+	ret          ; use default floppy parameters
+	 
+detect_ok:
+	mov dl, dh
+	xor dh, dh
+	inc dx
+	mov [total_heads], dx
+	mov ax, cx
+	and ax, 0x3f
+	mov [sectors_per_track], ax
+	popa
+	ret
+
+; @function: load
+; @brief: load the kernel image to memory
+; @parameters: start sector, destination, the number of sectors to read
 load:
 	push bp
 	mov bp, sp
@@ -16,7 +48,7 @@ load_loop:
 	push cx
 	push dx
 	push bx
-	call read_sector
+	call read
 	add sp, 6
 	dec ax
 	add bx, 512
@@ -32,26 +64,24 @@ load_ok:
 	pop bp
 	ret
 
-; read a sector from the floppy drive.
-; parameters: destination offset, destination segment, logical sector number
-read_sector:
+; @function: read
+; @brief: read a sector from the floppy drive.
+; @parameters: buffer offset, buffer segment, LBA
+read:
 	push bp
 	mov bp, sp
 	pusha
 
 	mov ax, [bp + 8]
 	xor dx, dx
-	mov bx, sectors_per_track
+	mov bx, [sectors_per_track]
 	div bx
 	inc dx                  ; sector is 1-based
 	mov [sector_index], dx
-	and ax, 1               ; total_heads = 2
-	mov [head_index], ax
-	
-	mov ax, [bp + 8]
 	xor dx, dx
-	mov bx, sectors_per_track * total_heads
+	mov bx, [total_heads]
 	div bx
+	mov [head_index], dx
 	mov [cylinder_index], ax
 
 	mov [number_retries], word 0
@@ -66,6 +96,10 @@ read_loop:
 	mov ch, bl
 	mov bx, [sector_index]
 	mov cl, bl
+	mov bx, [cylinder_index]
+	shr bx, 2
+	and bx, 0xc0
+	or  cl, bl                    ; not necessary for floppy
 	mov bx, [head_index]
 	mov dh, bl
 	mov bx, [bp + 4]
@@ -76,7 +110,7 @@ read_loop:
 	cmp word [number_retries], 3  ; retry 3 times
 	jne read_loop
 
-	push disk_error_msg
+	push disk_fl_msg
 	call print
 	cli
 	hlt
@@ -86,11 +120,13 @@ read_ok:
 	pop bp
 	ret
 
-sector_index dw 0
-head_index dw 0
+sector_index   dw 0
+head_index     dw 0
 cylinder_index dw 0
 number_retries dw 0
 
-sectors_per_track  equ 18
-total_heads        equ 2
-total_cylinders    equ 80
+; floppy default value
+sectors_per_track  dw 18
+total_heads        dw 2
+; total_cylinders  dw 80   ; not need, actually
+

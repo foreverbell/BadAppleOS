@@ -8,6 +8,14 @@
 [bits 16]
 
 begin:
+	; magic number
+	dd 0xc031
+
+	; enable A20 line
+	in al, 0x92
+	or al, 0x2
+	out 0x92, al
+
 	; detect memory via int 0x15, eax=0xe820
 	call mem_detect
 	
