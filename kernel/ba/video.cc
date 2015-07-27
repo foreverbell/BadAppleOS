@@ -117,7 +117,7 @@ void video::artify(void) {
 				char ch = at(f, x, y);
 				if (ch != ' ') {
 					if (f > 0 && at(f - 1, x, y) != ' ') {
-						/* 1% probably to get a mutation. */
+						/* 1% possibility to get a mutation. */
 						ch = rand() % 100 == 0 ? dense_chars[rand() % 7] : at(f - 1, x, y);
 					} else {
 						ch = '?'; // to be determinated.
