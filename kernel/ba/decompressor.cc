@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <new>
+#include <memory.h>
 #include "badapple.h"
 
 namespace badapple {
@@ -51,6 +52,9 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
 	buffer_end = buffer + buffer_size;
 	
 	const uint8_t *pointer = vdatas + 7;
+	
+	mm::logging(MM_LOG_SILENT); { // tell memory logger to shut up 
+
 	for (int i = 0; i < key_count; ++i) {
 		int key = (int) *pointer++;
 		int length = (int) *pointer++;
@@ -60,15 +64,17 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
 		for (int i = 0; i < length; ++i) {
 			data[i] = reader.nextb();
 		}
-		printf("%d: ", key);
-		for (int i = 0; i < length; ++i) {
-			printf("%d", int(data[i]));
-		}
-		printf("\n");
+//		printf("%d: ", key);
+//		for (int i = 0; i < length; ++i) {
+//			printf("%d", int(data[i]));
+//		}
+//		printf("\n");
 		btrie::insert(&btrie::root, data, key);
 		pointer += (length - 1) / 8 + 1;
 	}
 	
+	} mm::logging(MM_LOG_NOISY);
+
 	btrie::node_t *cur = &btrie::root;
 	stream reader = stream(pointer, vdatae);
 	for (int i = 0; i < buffer_size; ++i) {

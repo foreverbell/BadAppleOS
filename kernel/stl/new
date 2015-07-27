@@ -2,6 +2,7 @@
 #define __NEW__
 
 #include <malloc.h>
+#include <memory.h>
 #include <stdio.h>
 #include <panic.h>
 
@@ -18,7 +19,7 @@ inline void bad_alloc(const char *what = NULL) {
 
 inline void *operator new(size_t n) {
 	void *p = malloc(n);
-	printf("[new] %d bytes, pointer = 0x%x\n", n, (int) p);
+	mm::printf("[new] %d bytes, pointer = 0x%x\n.", n, (int) p);
 	if (p == NULL) {
 		std::bad_alloc();
 	}
@@ -27,7 +28,7 @@ inline void *operator new(size_t n) {
 
 inline void *operator new [](size_t n) {
 	void *p = malloc(n);
-	printf("[new] %d bytes, pointer = 0x%x\n", n, (int) p);
+	mm::printf("[new] %d bytes, pointer = 0x%x\n.", n, (int) p);
 	if (p == NULL) {
 		std::bad_alloc();
 	}
@@ -35,12 +36,12 @@ inline void *operator new [](size_t n) {
 }
 
 inline void operator delete(void *p) {
-	printf("[delete] pointer = 0x%x\n", (int) p);
+	mm::printf("[delete] pointer = 0x%x\n.", (int) p);
 	return free(p);
 }
 
 inline void operator delete [](void *p) {
-	printf("[delete] pointer = 0x%x\n", (int) p);
+	mm::printf("[delete] pointer = 0x%x\n.", (int) p);
 	return free(p);
 }
 
