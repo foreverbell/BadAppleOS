@@ -28,10 +28,10 @@ push 16
 call load
 add sp, 6
 
-; load kernel to 0x10000, 1024 sectors
+; load kernel to 0x10000, 383 sectors
 push 17
 push 0x1000
-push 1024
+push 383
 call load
 add sp, 6
 

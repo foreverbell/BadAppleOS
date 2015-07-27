@@ -27,7 +27,7 @@ kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) begin.o vdata.o
 	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
 	$(OC) $(OCFLAGS) kernel.out kernel.bin	
 	rm kernel.out
-	python ../padding.py kernel.bin 524288
+	python ../padding.py kernel.bin 196096
 	cp kernel.bin ../build/kernel.bin
 
 begin.o: begin.asm

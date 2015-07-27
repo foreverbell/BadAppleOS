@@ -8,11 +8,15 @@ There are 1686 frames in total, and each frame is two-valued, with size of 80*25
 
 ## Zipping
 
-The size of original plain text is about 1686\*80\*25=3,372,000 bytes, or 3.22 mega bytes [^1], to fit in the capacity of a floppy disk, which is 1.44 mega bytes, we have to zip it in some way. But I don't want to introduce some complicate algorithm to do that thing, so I use a quite simple way in a python script, see `kernel/encode.py`. 
+The size of original plain text is about 1686\*80\*25=3,372,000 bytes, or 3.22 mega-bytes [^1], to fit in the capacity of a floppy disk, which is 1.44 mega-bytes, we have to zip it in some way. But I don't want to introduce some complicate algorithm to do that thing, so I use a quite simple way in a python script, see `kernel/encode.py`. 
 
 [^1]: We omit `CRLF` in the plain txt file.
 
-The algorithm is, since the frame is already two-valued, `*` for a black pixel, space for a white pixel, we just simply encode it in each bit, which will produce a binary of $\frac{1686*80*25}{8}$=421,500 bytes, or 411.6 kilo bytes. It would be sufficient to be put in a floppy disk.
+The algorithm is, since the frame is already two-valued, `*` for a black pixel, space for a white pixel, we just simply encode it in each bit, which will produce a binary of $\frac{1686*80*25}{8}$=421,500 bytes, or 411.6 kilo-bytes. It would be sufficient to be put in a floppy disk.
+
+# Further Compression
+
+Open the zipped binary produced by last step with hex editor, we can find that there are so many `0xFF` and `0x00`. If you are familiar with [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding), you may realize that we can get further compression with Huffman encoding compression algorithm, which reduces the output to only 126 kilo-bytes.
 
 ## Linking to Kernel
 
