@@ -14,7 +14,7 @@ The size of original plain text is about 1686\*80\*25=3,372,000 bytes, or 3.22 m
 
 The algorithm is, since the frame is already two-valued, `*` for a black pixel, space for a white pixel, we just simply encode it in each bit, which will produce a binary of $\frac{1686*80*25}{8}$=421,500 bytes, or 411.6 kilo-bytes. It would be sufficient to be put in a floppy disk.
 
-# Further Compression
+## Further Compression
 
 Open the zipped binary produced by last step with hex editor, we can find that there are so many `0xFF` and `0x00`. If you are familiar with [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding), you may realize that we can get further compression with Huffman encoding compression algorithm, which reduces the output to only 126 kilo-bytes.
 
