@@ -6,7 +6,7 @@
 #include <new>
 #include <vector>
 #include <pair>
-#include "video.h"
+#include "badapple.h"
 
 using std::vector;
 using std::pair;
@@ -17,40 +17,54 @@ namespace badapple {
 extern uint8_t vdatas[] asm("_binary_vdata_bin_start");
 extern uint8_t vdatae[] asm("_binary_vdata_bin_end");
 
-video::video(void) {
+int video::progress() const {
+	return (cur_frame + 1) * 100 / count;
+}
+
+bool video::has_next() const {
+	return cur_frame < count;
+}
+
+void video::next() {
+	console::bkcopy(pool + cur_frame * VIDEO_SIZE);
+	cur_frame += 1;
+}
+
+void video::free(void) {
+	delete [] pool;
+	// free(pool);
+}
+
+video::video() {
 #ifdef VIDEO_SQUARE_TEXT
 	const uint16_t bkcolor1 = console::mkcolor(console::vga_color::white, console::vga_color::black);
 	const uint16_t bkcolor2 = console::mkcolor(console::vga_color::black, console::vga_color::white);
 #else
 	const uint16_t acolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
 #endif
-
-	printf("[video] Raw data address = 0x%x.\n", (int) vdatas);
-
+	
+	decompressor decomp(vdatas, vdatae);
+	
 	cur_frame = 0;
-	count = int(vdatae - vdatas) * 8 / VIDEO_SIZE;
+	count = decomp.frame_count();
 	// pool = (uint16_t *) malloc(count * VIDEO_SIZE * 2);
 	pool = new uint16_t[count * VIDEO_SIZE];
 	
 	printf("[video] Frame count = %d.\n", count);
 	printf("[video] Pool address = 0x%x.\n", (int) pool);
 	
-	uint8_t *raw_ptr = (uint8_t *) vdatas;
+	stream reader = stream(decomp.data(), decomp.data_end());
 	uint16_t *pool_ptr = pool;
 	uint16_t attrib;
 	
-	while (raw_ptr < vdatae) {
-		uint8_t raw = *raw_ptr;
-		for (int i = 0; i < 8; ++i) {
+	while (reader.has_next()) {
+		int bit = reader.nextb();
 #ifdef VIDEO_SQUARE_TEXT
-			attrib = (raw & 1 ? bkcolor1 : bkcolor2) << 8;
+		attrib = (bit ? bkcolor1 : bkcolor2) << 8;
 #else
-			attrib = (acolor << 8) | (raw & 1 ? ' ' : '#');
+		attrib = (acolor << 8) | (bit ? ' ' : '#');
 #endif
-			raw = raw >> 1;
-			*pool_ptr++ = attrib;
-		}
-		++raw_ptr;
+		*pool_ptr++ = attrib;
 	}
 	printf("[video] Data loaded, tailing pointer = 0x%x.\n", (int) pool_ptr);
 
@@ -94,7 +108,7 @@ void video::join(int x, int y) {
 	}
 }
 
-void video::artify(void) {
+void video::artify() {
 	const int dxy[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 	
 	const char dot_chars[4] = {'\'', '`', ',', '.'};
@@ -179,24 +193,6 @@ void video::artify(void) {
 			}
 		}
 	}
-}
-
-int video::progress(void) const {
-	return (cur_frame + 1) * 100 / count;
-}
-
-bool video::has_next(void) const {
-	return cur_frame < count;
-}
-
-void video::next(void) {
-	console::bkcopy(pool + cur_frame * VIDEO_SIZE);
-	cur_frame += 1;
-}
-
-void video::free(void) {
-	delete [] pool;
-	// free(pool);
 }
 
 } /* badapple */
