@@ -10,6 +10,7 @@ void cli(void);
 void sti(void);
 void halt(void);
 void die(void);
+void sleep(uint64_t);
 
 /* Interruption guard (scoped/RAII). */
 class int_guard {

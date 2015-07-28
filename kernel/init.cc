@@ -3,6 +3,7 @@
 #include <abi.h>
 #include <cpu_manipulate.h>
 #include <console.h>
+#include <timer.h>
 #include <stdio.h>
 #include <linkage.h>
 
@@ -24,6 +25,6 @@ asmlinkage void kinitialize(void) {
 
 	/* enable interrupt. */
 	cpu::sti(); 
-	
+
 	play();
 }

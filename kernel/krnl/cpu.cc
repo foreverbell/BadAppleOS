@@ -3,6 +3,7 @@
 #include <system.h>
 #include <panic.h>
 #include <assert.h>
+#include <timer.h>
 
 namespace cpu {
 	
@@ -37,6 +38,13 @@ void halt(void) {
 void die(void) {
 	cli();
 	halt();
+}
+
+void sleep(uint64_t ticks) {
+	uint64_t till = ticks + timer::get_system_tick();
+	while (timer::get_system_tick() < till) {
+		halt();
+	}
 }
 
 /* impl of int_guard. */
