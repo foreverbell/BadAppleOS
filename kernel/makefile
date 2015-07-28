@@ -1,4 +1,4 @@
-VIDEO_RAW = ../video.txt
+VIDEO_RAW = ../resource/video.txt
 
 ASFLAGS = -f elf
 CCFLAGS = -std=c++11 -O2 -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
@@ -27,14 +27,13 @@ kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) begin.o vdata.o
 	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
 	$(OC) $(OCFLAGS) kernel.out kernel.bin	
 	rm kernel.out
-	python ../padding.py kernel.bin 196096
 	cp kernel.bin ../build/kernel.bin
 
 begin.o: begin.asm
 	$(AS) -o begin.o $(ASFLAGS) begin.asm
 	
 vdata.bin: 
-	python encode.py $(VIDEO_RAW) vdata.bin
+	python ../script/encode.py $(VIDEO_RAW) vdata.bin
 
 vdata.o: vdata.bin
 	objcopy -B i386 -I binary -O elf32-i386 vdata.bin vdata.o

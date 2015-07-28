@@ -1,7 +1,7 @@
 OSIMG = build/os.img
 
 all: boot middle kernel
-	cat build/boot.bin build/middle.bin build/kernel.bin > $(OSIMG)
+	python script/link.py build/boot.bin build/middle.bin build/kernel.bin $(OSIMG)
 
 boot: 
 	cd boot && make && cd ..
@@ -19,9 +19,9 @@ debug: $(OSIMG)
 	bochsdbg -q -f bochsrc
 	
 dump:
-	ndisasm -b16 -o7C00h boot/boot.bin > boot/dump.txt
-	ndisasm -b16 -o9000h middle/middle.bin > middle/dump.txt
-	ndisasm -b32 -oC0000000h kernel/kernel.bin > kernel/dump.txt
+	cd boot && make dump && cd ..
+	cd middle && make dump && cd ..
+	cd kernel && make dump && cd ..
 	
 clean:
 	cd boot && make clean && cd ..

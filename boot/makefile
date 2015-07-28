@@ -9,7 +9,7 @@ boot.bin: boot.asm floppy.asm print.asm
 	cp boot.bin ../build/boot.bin
 
 dump:
-	ndisasm -b16 -o7C00h boot/boot.bin > boot/dump.txt
+	ndisasm -b16 -o7C00h boot.bin > dump.txt
 
 clean:
 	rm boot.bin

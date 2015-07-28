@@ -1,6 +1,15 @@
 [org 0x7c00]
 [bits 16]
 
+; jmp +0x4
+db 0xeb
+db 0x04
+
+; initialized by link.py
+middle_sectors  dw 0
+kernel_sectors  dw 0
+
+; clear cs
 jmp 0x0 : start_16
 start_16:
 
@@ -21,17 +30,21 @@ call print
 
 call detect
 
-; load middle to 0x9000, 16 sectors
+mov ax, [middle_sectors]
+mov bx, [kernel_sectors]
+
+; load middle to 0x9000
 push 1
 push 0x900
-push 16
+push ax
 call load
 add sp, 6
 
-; load kernel to 0x10000, 383 sectors
-push 17
+; load kernel to 0x10000
+inc ax
+push ax
 push 0x1000
-push 383
+push bx
 call load
 add sp, 6
 

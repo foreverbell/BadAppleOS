@@ -16,7 +16,6 @@ middle.bin: begin.o gdt.o mem.o mem_detect.o print.o page_init.o
 	$(LD) -o middle.out $(LDFLAGS) gdt.o mem.o mem_detect.o print.o page_init.o
 	$(OC) $(OCFLAGS) middle.out middle.bin
 	rm middle.out
-	python ../padding.py middle.bin 8192
 	cp middle.bin ../build/middle.bin
 
 begin.o: begin.asm
