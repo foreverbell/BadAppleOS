@@ -20,9 +20,9 @@ Open the zipped binary produced by last step with hex editor, we can find that t
 
 ## Linking to Kernel
 
-But how do our kernel knows where the video data is?
+But how do our kernel know where the video data is?
 
-A classical solution is to *compile* the video binary to an object file. Assuming the video binary is `vdata.bin`, we can use the following command to do it, 
+A classical solution is to *compile* the video binary to an object file. Assuming the video binary is `vdata.bin`, we can use the following command to compile it, 
 	
 	objcopy -B i386 -I binary -O elf32-i386 vdata.bin vdata.o
 	
@@ -63,4 +63,4 @@ Unfortunately, if we use more characters in our plain text, our zipping algorith
 
 [^4]: Display it on a terminal via a script to see what is it!
 
-After the artifying process, our video now meets my expectation (hope it meets yours as well). Through it still far away from [the state of art](https://www.youtube.com/watch?v=rFEc3f8TDFg) in some ways, but it does't matter, yeah? :)
+After the artifying process, our video now meets my expectation (hope it meets yours as well). Through it is still far away from [the state of art](https://www.youtube.com/watch?v=rFEc3f8TDFg) in some ways, but it does't matter, yeah? :)

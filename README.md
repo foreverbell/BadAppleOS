@@ -20,7 +20,7 @@ In the summer of 2014, I have some spare time, so I decide to relearn something 
 * Except some necessary booting code written in Assembly, other code is purely written in C++(11). 
 * A minimal STL port.
 * Artify the plain text to a great ASCII Art. 
-* ... and this operating system is only 200K!
+* ... and this operating system is only 180K (depends on your compiler)!
 
 # Toolchains
 
