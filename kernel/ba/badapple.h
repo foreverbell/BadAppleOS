@@ -43,9 +43,8 @@ public:
 	void free();
 private:
 	void artify();
-	char at(int, int, int) const;
-	void set(int, int, int, char);
 	
+	/* dsu */
 	std::pair<int, char> find(int);
 	void join(int, int);
 private:

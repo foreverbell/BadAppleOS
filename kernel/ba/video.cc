@@ -75,22 +75,6 @@ video::video() {
 #endif
 }
 
-char video::at(int frame, int x, int y) const {
-	const uint16_t *p = pool;
-	p += frame * VIDEO_SIZE;
-	p += y * VIDEO_MAX_COLUMN;
-	p += x;
-	return *(const char *) p;
-}
-
-void video::set(int frame, int x, int y, char ch) {
-	const uint16_t *p = pool;
-	p += frame * VIDEO_SIZE;
-	p += y * VIDEO_MAX_COLUMN;
-	p += x;
-	*(char *) p = ch;
-}
-
 std::pair<int, char> video::find(int x) {
 	if (dsu[x].first != x) {
 		dsu[x] = find(dsu[x].first);
@@ -117,6 +101,20 @@ void video::artify() {
 	
 	dsu.resize(VIDEO_SIZE);
 	
+	auto at = [&](int frame, int x, int y) -> char {
+		const uint16_t *p = pool;
+		p += frame * VIDEO_SIZE;
+		p += y * VIDEO_MAX_COLUMN;
+		p += x;
+		return *(const char *) p;
+	};
+	auto set = [&](int frame, int x, int y, char ch) -> void {
+		const uint16_t *p = pool;
+		p += frame * VIDEO_SIZE;
+		p += y * VIDEO_MAX_COLUMN;
+		p += x;
+		*(char *) p = ch;
+	};
 	auto label = [&](int x, int y) -> int {
 		return y * VIDEO_MAX_COLUMN + x;
 	};
@@ -164,7 +162,7 @@ void video::artify() {
 		}
 	}
 	
-	/* make boundary more variety. */
+	/* emphasize the boundary. */
 	for (int f = 0; f < count; ++f) {
 		for (int x = 0; x < VIDEO_MAX_COLUMN; ++x) {
 			for (int y = 0; y < VIDEO_MAX_ROW; ++y) {
