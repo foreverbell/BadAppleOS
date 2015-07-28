@@ -53,7 +53,7 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
 	
 	const uint8_t *pointer = vdatas + 7;
 	
-	mm::logging(MM_LOG_SILENT); { // tell memory logger to shut up 
+	mm::log_status(MM_LOG_SILENT); { // tell memory logger to shut up 
 
 	for (int i = 0; i < key_count; ++i) {
 		int key = (int) *pointer++;
@@ -73,7 +73,7 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
 		pointer += (length - 1) / 8 + 1;
 	}
 	
-	} mm::logging(MM_LOG_NOISY);
+	} mm::log_status(MM_LOG_NOISY);
 
 	btrie::node_t *cur = &btrie::root;
 	stream reader = stream(pointer, vdatae);

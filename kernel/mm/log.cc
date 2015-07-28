@@ -1,25 +1,28 @@
 
 #include <stdio.h>
+#include <stdint.h>
 
 namespace mm {
 
 namespace {
-	
+
 int silent = 0;
 
 }
 
-void logging(int s) {
-	silent = s;
+void log_status(int to) {
+	silent = to;
 }
 
-void printf(const char *fmt, ...) {
+void log_new(size_t n, void *p) {
 	if (!silent) {
-	    va_list arp;
-	    
-	    va_start(arp, fmt);
-	    ::printf(fmt, arp);
-	    va_end(arp);
+		printf("[new] %u bytes, pointer = 0x%x.\n", n, p);
+	}
+}
+
+void log_delete(void *p) {
+	if (!silent) {
+		printf("[delete] pointer = 0x%x.\n", p);
 	}
 }
 
