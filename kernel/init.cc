@@ -8,9 +8,19 @@
 #include <linkage.h>
 
 extern void play(void);
+
+namespace {
+	
+void idle(void) {
+	while (true) {
+		cpu::halt();
+	}
+}
+
+}
  
 asmlinkage void kinitialize(void) {	
-	/* no cursor, and no blink text. */
+	/* console: no cursor, and no blink text. */
 	console::initialize(false, false);
 	puts("Successfully landed to protected mode.");
 
@@ -21,10 +31,16 @@ asmlinkage void kinitialize(void) {
 	isr::initialize();
 	irq::initialize();
 	timer::initialize();
+	
+	/* call all C++ constructors. */
 	abi::ctors();
 
 	/* enable interrupt. */
 	cpu::sti(); 
 
+	/* play our BadApple animation. */
 	play();
+	
+	/* execute idle process. */
+	idle();
 }

@@ -6,21 +6,19 @@
 #include <stdint.h>
 #include <string.h>
 #include <systime.h>
+#include <new>
 
 namespace timer {
 
 namespace {
 
-#define MAX_TIMER_CALLBACK 16
-
 struct timer_callback_link_t {
-	int identifier;
 	/* all measured in tick, not second. */
 	uint64_t interval, trigger_count, count_down;
 	timer_callback_link_t *prev, *next;
 	fn_timer_callback_t lpfn_timer_callback;
 	bool deleted;
-} timer_pool[MAX_TIMER_CALLBACK], *timer_head;
+} *timer_head;
 
 uint64_t system_tick;
 
@@ -40,7 +38,7 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
 		bool to_call = !cur->deleted && (cur->count_down == 0 || cur->interval == TIMER_TICK_ONE_SHOT);
 		
 		if (to_call) {
-			cur->lpfn_timer_callback(cur->trigger_count, cur->identifier);
+			cur->lpfn_timer_callback(cur->trigger_count, (handle_t) cur);
 			cur->trigger_count += 1;
 			cur->count_down = cur->interval;
 		}
@@ -55,14 +53,14 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
 				cur->next->prev = cur->prev;
 			}
 			timer_callback_link_t *next = cur->next;
-			memset(cur, 0, sizeof(timer_callback_link_t));
+			delete cur;
 			cur = next;
 		} else {
 			cur = cur->next;
 		}
 	}
 	
-	if (++ticks >= TIMER_TICK_ONE_SECOND) {
+	if (++ticks >= TIMER_TICK_PER_SECOND) {
 		// printf("One second has passed.\n");
 		ticks = 0;
 	}
@@ -73,9 +71,8 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
 void initialize(void) {
 	system_tick = 0;
 
-	/* clear timer pool. */
-	memset(timer_pool, 0, sizeof(timer_pool));
-	timer_head = 0;
+	/* clear timer link head. */
+	timer_head = NULL;
 	
 	/* default tick rate, 18 ticks = 1 second. */
 	port::outb(PORT_PIT_CMD, 0x36);
@@ -91,34 +88,33 @@ uint64_t get_system_tick(void) {
 	return system_tick;
 }
 
-int add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
+handle_t add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
 	cpu::int_guard guard;
+	timer_callback_link_t *ptr = new timer_callback_link_t();
 	
-	for (int i = 0; i < MAX_TIMER_CALLBACK; ++i) {
-		if (timer_pool[i].lpfn_timer_callback == NULL) {
-			timer_pool[i].deleted = false;
-			timer_pool[i].prev = NULL;
-			timer_pool[i].next = timer_head;
-			if (timer_head != NULL) {
-				timer_head->prev = timer_pool + i;
-			}
-			timer_pool[i].identifier = i;
-			timer_pool[i].interval = interval;
-			timer_pool[i].trigger_count = 0;
-			timer_pool[i].count_down = interval;
-			timer_pool[i].lpfn_timer_callback = lpfn_callback;
-			timer_head = timer_pool + i;
-			return i;
-		}
+	if (ptr == NULL) {
+		return TIMER_INVALID_HANDLE;
 	}
-	return -1;
+	
+	ptr->deleted = false;
+	ptr->prev = NULL;
+	ptr->next = timer_head;
+	if (timer_head != NULL) {
+		timer_head->prev = ptr;
+	}
+	ptr->interval = interval;
+	ptr->trigger_count = 0;
+	ptr->count_down = interval;
+	ptr->lpfn_timer_callback = lpfn_callback;
+	timer_head = ptr;
+	
+	return (handle_t) ptr;
 }
 
-bool remove(int identifier) {
-	if (timer_pool[identifier].lpfn_timer_callback == NULL) {
-		return false;
-	}
-	timer_pool[identifier].deleted = true;
+bool remove(handle_t ptr) {
+	timer_callback_link_t *timer_ptr = (timer_callback_link_t *) ptr;
+	
+	timer_ptr->deleted = true;
 	return true;
 }
 

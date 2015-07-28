@@ -5,15 +5,18 @@
 
 namespace timer {
 
-#define TIMER_TICK_ONE_SECOND 18
+#define TIMER_INVALID_HANDLE  NULL
+
+#define TIMER_TICK_PER_SECOND 18
 #define TIMER_TICK_ONE_SHOT   0
 
-typedef void (* fn_timer_callback_t)(uint64_t, int);
+typedef void *handle_t;
+typedef void (* fn_timer_callback_t)(uint64_t, handle_t);
 
 void initialize(void);
 uint64_t get_system_tick(void);
-int add(uint64_t, fn_timer_callback_t);
-bool remove(int);
+handle_t add(uint64_t, fn_timer_callback_t);
+bool remove(handle_t);
 
 } /* timer */
 

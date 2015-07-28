@@ -4,9 +4,5 @@
 [bits 32]
 
 begin:
-	call _kinitialize
-	jmp loop
-
-loop:
-	hlt
-	jmp loop
+	jmp _kinitialize
+	; never be here
