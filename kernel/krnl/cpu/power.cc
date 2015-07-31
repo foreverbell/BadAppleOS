@@ -2,6 +2,8 @@
 #include <system.h>
 #include <port.h>
 
+namespace cpu {
+	
 namespace power {
 
 void reboot(void) {
@@ -9,3 +11,5 @@ void reboot(void) {
 }
 
 } /* power */
+
+} /* cpu */

@@ -3,12 +3,6 @@
 
 #include <stdint.h>
 
-namespace power {
-	
-void reboot(void);
-
-} /* power */
-
 namespace gdt {
 
 #define KERNEL_CODE_SEL 0x8

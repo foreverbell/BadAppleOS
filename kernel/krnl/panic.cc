@@ -1,5 +1,5 @@
 
-#include <cpu_manipulate.h>
+#include <cpu.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <console.h>
@@ -19,7 +19,7 @@ void panic(const char *what, int code) {
 	}
 	printf(" code: %d.\n", code);
 	
-	cpu::die();
+	cpu::manipulate::die();
 }
 
 void panic(const char *what) {

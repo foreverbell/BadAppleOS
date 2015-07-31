@@ -1,11 +1,14 @@
-#ifndef __CPU_MANIPULATE_H__
-#define __CPU_MANIPULATE_H__
+#ifndef __CPU_H__
+#define __CPU_H__
 
 #include "system.h"
 
 namespace cpu {
-	
+		
 void initialize(void);
+
+namespace manipulate {
+
 void cli(void);
 void sti(void);
 void halt(void);
@@ -25,6 +28,21 @@ public:
 private:
 	bool cleared;
 };
+
+} /* manipulate */
+
+namespace cpuid {
+
+void vendor(char *);
+void feature(int *, int *);
+
+} /* cpuid */
+
+namespace power {
+	
+void reboot(void);
+
+} /* power */
 
 } /* cpu */
 

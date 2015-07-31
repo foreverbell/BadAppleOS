@@ -1,7 +1,7 @@
 #include <system.h>
 #include <memory.h>
 #include <abi.h>
-#include <cpu_manipulate.h>
+#include <cpu.h>
 #include <console.h>
 #include <timer.h>
 #include <stdio.h>
@@ -13,7 +13,7 @@ namespace {
 	
 void idle(void) {
 	while (true) {
-		cpu::halt();
+		cpu::manipulate::halt();
 	}
 }
 
@@ -36,7 +36,7 @@ asmlinkage void kinitialize(void) {
 	abi::ctors();
 
 	/* enable interrupt. */
-	cpu::sti(); 
+	cpu::manipulate::sti(); 
 
 	/* play our BadApple animation. */
 	play();

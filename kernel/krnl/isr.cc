@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <system.h>
-#include <cpu_manipulate.h>
+#include <cpu.h>
 #include <stdio.h>
 #include <linkage.h>
 
@@ -73,7 +73,7 @@ void dispatcher(isr_context_t *ptr) {
 	printf("\teip=0x%x, user_esp=0x%x, eflags=0x%x\n", ptr->eip, ptr->user_esp, ptr->eflags);
 	
 	printf("System halted.\n");
-	cpu::die();
+	cpu::manipulate::die();
 }
 
 }

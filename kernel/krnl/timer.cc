@@ -1,12 +1,14 @@
 
 #include <timer.h>
-#include <cpu_manipulate.h>
+#include <cpu.h>
 #include <port.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <systime.h>
 #include <new>
+
+using cpu::manipulate::int_guard;
 
 namespace timer {
 
@@ -89,7 +91,7 @@ uint64_t get_system_tick(void) {
 }
 
 handle_t add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
-	cpu::int_guard guard;
+	int_guard guard;
 	timer_callback_link_t *ptr = new timer_callback_link_t();
 	
 	if (ptr == NULL) {

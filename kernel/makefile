@@ -18,6 +18,7 @@ CC_OBJECTS := \
 	$(patsubst %.cc, %.o, $(wildcard ba/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard krnl/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard krnl/abi/*.cc)) \
+	$(patsubst %.cc, %.o, $(wildcard krnl/cpu/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard mm/*.cc)) \
 	$(patsubst %.cc, %.o, $(wildcard util/*.cc))
 
@@ -52,6 +53,7 @@ clean:
 	rm ba/*.o
 	rm krnl/*.o
 	rm krnl/abi/*.o
+	rm krnl/cpu/*.o
 	rm mm/*.o
 	rm util/*.o
 	rm kernel.bin vdata.bin
