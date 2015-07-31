@@ -33,6 +33,7 @@ private:
 
 namespace cpuid {
 
+bool support();
 void vendor(char *);
 void feature(int *, int *);
 

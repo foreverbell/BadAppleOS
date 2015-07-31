@@ -6,6 +6,32 @@ namespace cpu {
 	
 namespace cpuid {
 
+/* because gcc doesn't support naked function, so the only way is to write shell code. */
+/* 
+  pushfd
+  pushfd
+  xor dword [esp], 0x00200000
+  popfd
+  pushfd
+  pop eax
+  xor eax, [esp]
+  popfd
+  and eax, 0x00200000
+  ret
+*/
+
+const char *shell_code = "\x66\x9C\x66\x9C\x66\x67\x81\x34\x24\x00\x00\x20\x00\x66\x9D\x66\x9C\x66\x58\x66\x67\x33\x04\x24\x66\x9D\x66\x25\x00\x00\x20\x00\xC3";
+
+bool support() {
+	int ret = 0;
+	__asm__ __volatile__ (
+		"call %%eax"
+		: "=a"(ret)
+		: "a"(shell_code)
+	);
+	return ret ? true : false;
+}
+
 /* issue a cpuid request. input: eax; output: eax, ebx, ecx, edx. */
 void request(int *eax, int *ebx, int *ecx, int *edx) {
 	int code = *eax, dummy;
