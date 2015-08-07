@@ -34,6 +34,8 @@ void play(void) {
 					v.next();
 					printf(" (%d%%) ", v.progress());
 				} else {
+					mm::log_status(MM_LOG_SILENT);
+						
 					timer::remove(h);
 					v.free();
 					console::clear();

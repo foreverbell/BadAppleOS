@@ -19,35 +19,53 @@ namespace port {
 #define PORT_CMOS_DAT       0x71
 
 inline uint8_t inb(uint16_t port) {
-    uint8_t ret;
-    __asm__ __volatile__ ("inb %1, %0":"=a"(ret):"dN"(port));
-    return ret;
+	uint8_t ret;
+	__asm__ __volatile__ (
+        "inb %1, %0"
+		: "=a"(ret)
+		: "dN"(port)
+	);
+	return ret;
 }
 
 inline uint16_t inw(uint16_t port) {
-    uint16_t ret;
-    __asm__ __volatile__ ("inw %1, %0":"=a"(ret):"dN"(port));
-    return ret;
+	uint16_t ret;
+	__asm__ __volatile__ (
+		"inw %1, %0"
+		: "=a"(ret)
+		: "dN"(port)
+	);
+	return ret;
 }
 
 inline void outb(uint16_t port, uint8_t data) {
-    __asm__ __volatile__ ("outb %1, %0"::"dN"(port),"a"(data));
+	__asm__ __volatile__ (
+		"outb %1, %0"
+		:
+		: "dN"(port), "a"(data)
+	);
 }
 
 inline void outw(uint16_t port, uint16_t data) {
-    __asm__ __volatile__ ("outw %1, %0"::"dN"(port),"a"(data));
-#ifdef FORCE_IO_WAIT
-	/* Forces the CPU to wait for an I/O operation to complete. */
-    /* Port 0x80 is used for 'checkpoints' during POST. */
-    /* The Linux kernel seems to think it is free for use :-/ */
-    __asm__ __volatile__ ("outb %%al, $0x80" : : "a"(0));
-#endif
+	__asm__ __volatile__ (
+		"outw %1, %0"
+		:
+		: "dN"(port),"a"(data)
+	);
+}
+
+inline void wait(void) {
+	__asm__ __volatile__ (
+		"outb %%al, $0x80" 
+		: 
+		: "a"(0)
+	); 
 }
 
 } /* port */
 
 namespace cmos {
-    
+	
 inline uint8_t read(uint8_t which) {
 #ifdef NMI_DISABLE
 	which |= (1 << 7);

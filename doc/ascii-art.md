@@ -51,16 +51,14 @@ The main problem is, the plain text is too ugly to be displayed on the screen, w
 
 A typical ASCII art uses a variety of characters to give people back the feeling of original picture. I think the reason for lacking of a great visual effect of our video is that we only use one character `*`.
 
-Unfortunately, if we use more characters in our plain text, our zipping algorithm will lose its power. To fix this, I come up with two clever [^2] methods described below. 
+Unfortunately, if we use more characters in our plain text, our zipping algorithm will lose its power. To fix this, I come up with two methods described below. 
 
-[^2]: Don't be toooooooo modest!
+* To avoid monotonous, we randomly change each connected block to one *dense* character, picked from the charSet `NH#*&`. Detecting the block is a quite classical problem, a [Flood Fill algorithm](https://en.wikipedia.org/wiki/Flood_fill) or a [Disjoint-set data structure](https://en.wikipedia.org/wiki/Disjoint-set_data_structure) is suitable. And for consistency, the same block in two consecutive frames will remain the same character. [^2] However, it turns out that there will be one block keeping the same character for a long time, so each reasonably small block will have a small possibility to do a mutation avoiding this. 
 
-* To avoid monotonous, we randomly change each connected block to one *dense* character, picked from the charSet `MHW#*&@`. Detecting the block is a quite classical problem, a [Flood Fill algorithm](https://en.wikipedia.org/wiki/Flood_fill) or a [Disjoint-set data structure](https://en.wikipedia.org/wiki/Disjoint-set_data_structure) is suitable. And for consistency, the same block in two consecutive frames will remain the same character. [^3] However, it turns out that there will be one block keeping the same character for a long time, so each pixel will have a 1% possibility to do a mutation avoiding this. 
+[^2]: If there is conflict when merging two separate blocks, randomly pick one.
 
-[^3]: If there is conflict when merging two separate blocks, randomly pick one.
+* To emphasize the boundary, we do a simple boundary check, just examining if one of the adjacent pixels is empty, then replace the boundary pixel with the correct one from ``'`.,``. And if one of the horizontal or vertical direction is both non-empty, then replace it with the line characters from `\/^` and `chr(28)` [^3].
 
-* To emphasize the boundary, we do a simple boundary check, just examining if one of the adjacent pixels is empty, then replace the boundary pixel with the correct one from ``'`.,``. And if one of the horizontal or vertical direction is both non-empty, then replace it with the line characters from `\/^` and `chr(28)` [^4].
-
-[^4]: Display it on a terminal via a script to see what is it!
+[^3]: Display it on a terminal via a script to see what is it!
 
 After the artifying process, our video now meets my expectation (hope it meets yours as well). Through it is still far away from [the state of art](https://www.youtube.com/watch?v=rFEc3f8TDFg) in some ways, but it does't matter, yeah? :)

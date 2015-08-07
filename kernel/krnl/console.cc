@@ -23,7 +23,7 @@ namespace cursor {
 
 int X, Y;
 bool has;
-int vport; // base IO port for video, default 0x3d4
+int vport; // base IO port for video, usually 0x3d4
 
 void update(void) {
 	if (has) {
@@ -133,6 +133,7 @@ void clear(void) {
 
 	cursor::X = cursor::Y = 0;
 	cursor::update();
+	port::wait();
 }
 
 void bkcopy(const uint16_t *src) {

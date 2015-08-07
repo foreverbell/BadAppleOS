@@ -45,12 +45,16 @@ private:
 	void artify();
 	
 	/* dsu */
-	std::pair<int, char> find(int);
+	struct info_t {
+		char ch;
+		int size;
+	};
+	std::pair<int, info_t> find(int);
 	void join(int, int);
 private:
 	uint16_t *pool;
 	int count, cur_frame;
-	std::vector<std::pair<int, char>> dsu;
+	std::vector<std::pair<int, info_t>> dsu;
 };
 
 } /* badapple */

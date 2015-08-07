@@ -75,7 +75,7 @@ video::video() {
 #endif
 }
 
-std::pair<int, char> video::find(int x) {
+std::pair<int, video::info_t> video::find(int x) {
 	if (dsu[x].first != x) {
 		dsu[x] = find(dsu[x].first);
 	}
@@ -85,10 +85,12 @@ std::pair<int, char> video::find(int x) {
 void video::join(int x, int y) {
 	x = find(x).first;
 	y = find(y).first;
-	if (dsu[x].second == '?') {
-		dsu[x] = dsu[y];
-	} else {
-		dsu[y] = dsu[x];
+	if (x != y) {
+		if (dsu[x].second.ch != '?') {
+			std::swap(x, y);
+		}
+		dsu[x].first = dsu[y].first;
+		dsu[y].second.size += dsu[x].second.size;
 	}
 }
 
@@ -97,7 +99,8 @@ void video::artify() {
 	
 	const char dot_chars[4] = {'\'', '`', ',', '.'};
 	const char line_chars[4] = {'\\', '/', char(28), '^'};
-	const char dense_chars[7] = {'M', 'H', 'W', '#', '*', '&', '@'};
+	const char dense_chars[5] = {'N', 'H', '#', '*', '&'};
+	const int dense_count = sizeof(dense_chars) / sizeof(char);
 	
 	dsu.resize(VIDEO_SIZE);
 	
@@ -129,13 +132,12 @@ void video::artify() {
 				char ch = at(f, x, y);
 				if (ch != ' ') {
 					if (f > 0 && at(f - 1, x, y) != ' ') {
-						/* 1% possibility to get a mutation. */
-						ch = rand() % 100 == 0 ? dense_chars[rand() % 7] : at(f - 1, x, y);
+						ch = at(f - 1, x, y);
 					} else {
 						ch = '?'; // to be determinated.
 					}
 				}
-				dsu[label(x, y)] = make_pair(label(x, y), ch);
+				dsu[label(x, y)] = make_pair(label(x, y), (info_t) {ch, 1} );
 			}
 		}
 		for (int x = 0; x < VIDEO_MAX_COLUMN; ++x) {
@@ -153,11 +155,17 @@ void video::artify() {
 		}
 		for (int x = 0; x < VIDEO_MAX_COLUMN; ++x) {
 			for (int y = 0; y < VIDEO_MAX_ROW; ++y) {
-				char &ch = dsu[find(label(x, y)).first].second;
+				int father = find(label(x, y)).first;
+				char &ch = dsu[father].second.ch;
+				/* MSB=1 <---> mutated. */
 				if (ch == '?') {
-					ch = dense_chars[rand() % 7];
+					ch = dense_chars[rand() % dense_count] | 0x80;
+				} else if (ch > 0 && ch != ' ' && dsu[father].second.size < 100) {
+					/* 10% possibility to get a mutation. */
+					ch = rand() % 10 == 0 ? dense_chars[rand() % dense_count] : ch;
+					ch |= 0x80;
 				}
-				set(f, x, y, ch);
+				set(f, x, y, ch & 0x7f);
 			}
 		}
 	}
