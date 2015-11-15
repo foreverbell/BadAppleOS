@@ -11,17 +11,17 @@ namespace {
 
 #pragma pack(push, 1)
 struct gdt_entry_t {
-    uint16_t limit;
-    uint16_t base_low;
-    uint8_t base_middle;
-    uint8_t access;
-    uint8_t granularity;
-    uint8_t base_high;
+	uint16_t limit;
+	uint16_t base_low;
+	uint8_t base_middle;
+	uint8_t access;
+	uint8_t granularity;
+	uint8_t base_high;
 } __attribute__((packed));
 
 struct gdt_descriptior_t {
-    uint16_t limit;
-    uint32_t base;
+	uint16_t limit;
+	uint32_t base;
 } __attribute__((packed));
 #pragma pack(pop)
 

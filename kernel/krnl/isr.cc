@@ -57,10 +57,10 @@ const char *exception_message[] = {
 
 #pragma pack(push, 1)
 struct isr_context_t {
-    uint32_t gs, fs, es, ds;
-    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-    uint32_t exception, error_code;
-    uint32_t eip, cs, eflags, user_esp, ss;
+	uint32_t gs, fs, es, ds;
+	uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+	uint32_t exception, error_code;
+	uint32_t eip, cs, eflags, user_esp, ss;
 } __attribute__((packed));
 #pragma pack(pop)
 

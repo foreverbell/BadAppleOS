@@ -37,7 +37,7 @@ uint32_t hash(fn_ptr lpfn) {
 
 /* we don't need dso_handle actually. */
 int cxa_atexit(fn_ptr lpfn, void *pobj, void * /* dso_handle */) {
-	printf("[cxa_atexit] register lpfn = 0x%x, pobj = 0x%x\n", lpfn, pobj);
+	printf("[cxa_atexit] Register lpfn = 0x%x, pobj = 0x%x\n", lpfn, pobj);
 	
 	uint32_t h = hash(lpfn) % SLOT_SIZE;
 	atexit_t *patexit = slot_header[h];

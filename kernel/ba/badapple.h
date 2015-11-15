@@ -28,7 +28,7 @@ public:
 	const uint8_t *data_end() const { return buffer_end; }
 	
 	decompressor(const decompressor &) = delete;
-    decompressor &operator = (const decompressor &) = delete;
+	decompressor &operator = (const decompressor &) = delete;
 private:
 	int count;
 	uint8_t *buffer, *buffer_end;

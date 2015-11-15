@@ -8,7 +8,7 @@ void *memset(void *s, int v, size_t n) {
 		"stosb"
 		: /* no outputs */
 		: "a"(v), "D"(s), "c"(n));
-    return s;
+	return s;
 }
 
 void *memcpy(void *d, const void *s, size_t n) {
