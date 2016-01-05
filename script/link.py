@@ -1,17 +1,14 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 
 import os, sys
 from subprocess import call
 
-binary = [sys.argv[1], sys.argv[2], sys.argv[3]]
+binary = sys.argv[1:4]
 output = sys.argv[4]
 
-size = [0, 0, 0]
+size = [os.stat(binary[i]).st_size for i in xrange(0, 3)]
 size_aligned = [0, 0, 0]
-
-for i in xrange(0, 3):
-  size[i] = os.stat(binary[i]).st_size
 
 assert size[0] == 512
 size_aligned[0] = size[0]
@@ -30,7 +27,6 @@ for i in xrange(0, 3):
     padding = size_aligned[i] - size[i]
     assert padding >= 0
     f.write(bytearray(padding))
-    f.close()
 
 print "Linking."
 with open(binary[0], "r+b") as f:
@@ -46,8 +42,7 @@ with open(binary[0], "r+b") as f:
     s2 >> 8,
   ]
   f.write(bytearray(bytes4))
-  f.close()
 
-os.system("cat " + sys.argv[1] + " " + sys.argv[2] + " " +  sys.argv[3] + " > " + sys.argv[4])
+os.system("cat %s %s %s > %s" % tuple(sys.argv[1:5]))
 
 print "Done!"

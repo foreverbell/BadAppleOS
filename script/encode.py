@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 
 import os, sys
 from heapq import *
@@ -56,7 +56,7 @@ def compress(content):
   hdata = ""
   for item in edata:
     hdata += code[item]
-  code_bytes = [
+  code_bytes = [ # reverse the endian
     fcount >> 8, 
     fcount & 0xff, 
     elen >> 24,
@@ -72,8 +72,7 @@ def compress(content):
     code_bytes += tmp
   return code_bytes + encode(hdata, '1')
  
-txt = sys.argv[1]
-bin = sys.argv[2]
+txt, bin = sys.argv[1], sys.argv[2]
 data = []
 
 with open(txt, "r") as fin:
@@ -81,6 +80,3 @@ with open(txt, "r") as fin:
     content = ''.join(fin.readlines())
     content = ''.join(content.splitlines())
     fout.write(bytearray(compress(content)))
-    fout.close()
-  fin.close()
- 
