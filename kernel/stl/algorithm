@@ -5,70 +5,70 @@
 #include <xstddef>
 
 namespace std {
-	
+  
 template<typename value_type>
 inline void swap(value_type &a, value_type &b) {
-	value_type t = a; a = b; b = t;
+  value_type t = a; a = b; b = t;
 }
 
 template<typename random_iterator, typename compare>
 inline void _shiftd_heap(random_iterator root, random_iterator first, random_iterator last, compare comp) {
-	for (random_iterator cur = first, lch = (first - root) + first + 1; lch < last; ) {
-		random_iterator rch, to_swap = cur;
-		
-		if (comp(*to_swap, *lch)) {
-			to_swap = lch;
-		}
-		rch = lch + 1;
-		if (rch < last && comp(*to_swap, *rch)) {
-			to_swap = rch;
-		}
-		if (to_swap == cur) {
-			break;
-		} else {
-			swap(*cur, *to_swap);
-			cur = to_swap;
-			lch = (cur - root) + cur + 1;
-		}
-	}
+  for (random_iterator cur = first, lch = (first - root) + first + 1; lch < last; ) {
+    random_iterator rch, to_swap = cur;
+    
+    if (comp(*to_swap, *lch)) {
+      to_swap = lch;
+    }
+    rch = lch + 1;
+    if (rch < last && comp(*to_swap, *rch)) {
+      to_swap = rch;
+    }
+    if (to_swap == cur) {
+      break;
+    } else {
+      swap(*cur, *to_swap);
+      cur = to_swap;
+      lch = (cur - root) + cur + 1;
+    }
+  }
 }
 
 template<typename random_iterator, typename compare>
 inline void make_heap(random_iterator first, random_iterator last, compare comp) {
-	random_iterator cur = first + (last - first - 2) / 2;
-	while (cur >= first) {
-		_shiftd_heap(first, cur--, last, comp);		
-	}
+  random_iterator cur = first + (last - first - 2) / 2;
+  while (cur >= first) {
+    _shiftd_heap(first, cur--, last, comp);    
+  }
 }
 
 template<typename random_iterator>
 inline void make_heap(random_iterator first, random_iterator last) {
-	make_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
+  make_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
 }
 
 template<typename random_iterator, typename compare>
 inline void pop_heap(random_iterator first, random_iterator last, compare comp) {
-	swap(*first, *(last - 1));
-	_shiftd_heap(first, first, last - 1, comp);
+  swap(*first, *(last - 1));
+  _shiftd_heap(first, first, last - 1, comp);
 }
 
 template<typename random_iterator>
 inline void pop_heap(random_iterator first, random_iterator last) {
-	pop_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
+  pop_heap(first, last, less<typename iterator_traits<random_iterator>::value_type>());
 }
 
 template<typename random_iterator, typename compare>
 inline void sort(random_iterator first, random_iterator last, compare comp) {
-	make_heap(first, last, comp);
-	while (first < last) {
-		pop_heap(first, last, comp);
-		last -= 1;
-	} 
+  make_heap(first, last, comp);
+  while (first < last) {
+    pop_heap(first, last, comp);
+    last -= 1;
+  } 
 }
 
 template<typename random_iterator>
 inline void sort(random_iterator first, random_iterator last) {
-	sort(first, last, less<typename iterator_traits<random_iterator>::value_type>());
+  sort(first, last, less<typename iterator_traits<random_iterator>::value_type>());
 }
 
 } /* std */

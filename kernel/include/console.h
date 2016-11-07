@@ -11,7 +11,7 @@ namespace console {
 #define VIDEO_SIZE        2000 // 25*80
 
 namespace vga_color {
-	
+
 const int black = 0;
 const int blue = 1;
 const int green = 2;

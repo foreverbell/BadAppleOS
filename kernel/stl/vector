@@ -7,197 +7,197 @@
 namespace std {
 
 template <typename type,
-    typename allocator_type = std::allocator <type> >
+  typename allocator_type = std::allocator <type> >
 class vector {
 public:
-    typedef typename allocator_type::value_type
-        value_type, *iterator, *pointer, &reference;
-    typedef const typename allocator_type::value_type
-        *const_iterator, *const_pointer, &const_reference;
-    typedef ptrdiff_t difference_type; 
-    typedef typename allocator_type::size_type size_type;
+  typedef typename allocator_type::value_type
+    value_type, *iterator, *pointer, &reference;
+  typedef const typename allocator_type::value_type
+    *const_iterator, *const_pointer, &const_reference;
+  typedef ptrdiff_t difference_type; 
+  typedef typename allocator_type::size_type size_type;
 
-    vector(size_type capacity = 8)
-    {
-        vector_size = 0; buff_size = capacity;
-        buff = (pointer)alloc.allocate(buff_size * sizeof(type));
+  vector(size_type capacity = 8)
+  {
+    vector_size = 0; buff_size = capacity;
+    buff = (pointer)alloc.allocate(buff_size * sizeof(type));
+  }
+
+  vector(const vector <type> &v)
+  {
+    vector_size = v.vector_size; buff_size = v.buff_size;
+    buff = (pointer)alloc.allocate(buff_size * sizeof(type));
+
+    for (size_type pos = 0; pos != vector_size; pos++)
+      alloc.construct(&buff[pos], v.buff[pos]);
+  }
+
+  ~vector()
+  {
+    clear();
+    alloc.deallocate(buff, buff_size);
+  }
+
+  void swap(vector <type> &v)
+  {
+    std::swap(buff, v.buff);
+    std::swap(vector_size, v.vector_size);
+    std::swap(buff_size, v.buff_size);
+  }
+
+  void assign(const vector <type> &v)
+  {
+    clear();
+    insert(begin(), v.begin(), v.end());
+  }
+
+  void assign(size_type count, const_reference val)
+  {
+    clear();
+    insert(begin(), count, val);
+  }
+
+  void reserve(size_type need)
+  {
+    if (need <= buff_size) return;
+
+    vector <type> v(need);
+    v.insert(v.begin(), begin(), end());
+
+    swap(v);
+  }
+
+  void insert(iterator where, size_type count, const_reference val)
+  {
+    if (count == 0) return;
+    size_type offset = where - begin();
+
+    if (count < (vector_size >> 1))
+      reserve(vector_size + (vector_size >> 1));
+    else
+      reserve(vector_size + count);
+
+    where = begin() + offset;
+    for (iterator iter = end(); iter != where; --iter) {
+      alloc.construct(&*iter, *(iter - count));
+      alloc.destroy(iter - count);
     }
 
-    vector(const vector <type> &v)
-    {
-        vector_size = v.vector_size; buff_size = v.buff_size;
-        buff = (pointer)alloc.allocate(buff_size * sizeof(type));
+    for (size_type pos = 0; pos != count; pos++)
+      alloc.construct(&*where + pos, val);
+    
+    vector_size += count;
+  }
 
-        for (size_type pos = 0; pos != vector_size; pos++)
-            alloc.construct(&buff[pos], v.buff[pos]);
+  void insert(iterator where, iterator first, iterator last)
+  {
+    size_type count = last - first;
+    if (count == 0) return;
+    size_type offset = where - begin();
+
+    if (count < (vector_size >> 1))
+      reserve(vector_size + (vector_size >> 1));
+    else
+      reserve(vector_size + count);
+
+    where = begin() + offset;
+    for (iterator iter = end(); iter != where; ) {
+      --iter;
+      alloc.construct(&*(iter + count), *iter);
+      alloc.destroy(iter);
     }
 
-    ~vector()
-    {
-        clear();
-        alloc.deallocate(buff, buff_size);
+    for (; first != last; where++, first++)
+      alloc.construct(&*where, *first);
+
+    vector_size += count;
+  }
+
+  void insert(iterator where, const_reference val)
+    { insert(where, 1, val); }
+
+  void erase(iterator first, iterator last)
+  {
+    size_type count = last - first;
+    if (count == 0) return;
+
+    for (; last != end(); first++, last++) {
+      alloc.destroy(&*first);
+      alloc.construct(&*first, *last);
     }
 
-    void swap(vector <type> &v)
-    {
-        std::swap(buff, v.buff);
-        std::swap(vector_size, v.vector_size);
-        std::swap(buff_size, v.buff_size);
-    }
+    for (; first != end(); first++)
+      alloc.destroy(first);
 
-    void assign(const vector <type> &v)
-    {
-        clear();
-        insert(begin(), v.begin(), v.end());
-    }
+    vector_size -= count;
+  }
 
-    void assign(size_type count, const_reference val)
-    {
-        clear();
-        insert(begin(), count, val);
-    }
+  void erase(iterator where) { erase(where, where + 1); }
+  void clear() { erase(begin(), end()); }
 
-    void reserve(size_type need)
-    {
-        if (need <= buff_size) return;
+  void resize(size_type newsize, const_reference val)
+  {
+    if (newsize > vector_size)
+      insert(end(), newsize - vector_size, val);
+    else
+      erase(end() - (vector_size - newsize), end());
+  }
 
-        vector <type> v(need);
-        v.insert(v.begin(), begin(), end());
+  void resize(size_type newsize) { resize(newsize, type()); }
 
-        swap(v);
-    }
+  pointer data() { return buff; }
+  const_pointer data() const { return buff; }
 
-    void insert(iterator where, size_type count, const_reference val)
-    {
-        if (count == 0) return;
-        size_type offset = where - begin();
+  reference front() { return buff[0]; }
+  reference back()  { return buff[vector_size - 1]; }
+  iterator begin()  { return buff; }
+  iterator end()  { return buff + vector_size; }
 
-        if (count < (vector_size >> 1))
-            reserve(vector_size + (vector_size >> 1));
-        else
-            reserve(vector_size + count);
+  const_reference front() const { return buff[0]; }
+  const_reference back() const  { return buff[vector_size - 1]; }
+  const_iterator begin() const  { return buff; }
+  const_iterator end() const  { return buff + vector_size; }
 
-        where = begin() + offset;
-        for (iterator iter = end(); iter != where; --iter) {
-            alloc.construct(&*iter, *(iter - count));
-            alloc.destroy(iter - count);
-        }
+  void push_back(const_reference val) { insert(end(), val); }
+  void pop_back() { erase(end() - 1); }
 
-        for (size_type pos = 0; pos != count; pos++)
-            alloc.construct(&*where + pos, val);
-        
-        vector_size += count;
-    }
+  size_type size() const { return vector_size; }
+  size_type capacity() const { return buff_size; }
+  allocator_type get_allocator() const { return alloc; }
+  size_type max_size() const { return alloc.max_size(); }
 
-    void insert(iterator where, iterator first, iterator last)
-    {
-        size_type count = last - first;
-        if (count == 0) return;
-        size_type offset = where - begin();
+  vector <type> & operator =(const vector <type> v)
+  {
+    assign(v);
+    return *this;
+  }
 
-        if (count < (vector_size >> 1))
-            reserve(vector_size + (vector_size >> 1));
-        else
-            reserve(vector_size + count);
+  reference operator [] (size_type pos)
+    { return *(begin() + pos); }
 
-        where = begin() + offset;
-        for (iterator iter = end(); iter != where; ) {
-            --iter;
-            alloc.construct(&*(iter + count), *iter);
-            alloc.destroy(iter);
-        }
+  const_reference operator [] (size_type pos) const
+    { return *(begin() + pos); }
 
-        for (; first != last; where++, first++)
-            alloc.construct(&*where, *first);
+  reference at(size_type pos)
+  {
+    if (pos >= vector_size)
+      std::bad_alloc("[vector] invalid vector<T> subscript");
 
-        vector_size += count;
-    }
+    return *(begin() + pos);
+  }
 
-    void insert(iterator where, const_reference val)
-        { insert(where, 1, val); }
+  const_reference at(size_type pos) const
+  {
+    if (pos >= vector_size)
+      std::bad_alloc("[vector] invalid vector<T> subscript");
 
-    void erase(iterator first, iterator last)
-    {
-        size_type count = last - first;
-        if (count == 0) return;
-
-        for (; last != end(); first++, last++) {
-            alloc.destroy(&*first);
-            alloc.construct(&*first, *last);
-        }
-
-        for (; first != end(); first++)
-            alloc.destroy(first);
-
-        vector_size -= count;
-    }
-
-    void erase(iterator where) { erase(where, where + 1); }
-    void clear() { erase(begin(), end()); }
-
-    void resize(size_type newsize, const_reference val)
-    {
-        if (newsize > vector_size)
-            insert(end(), newsize - vector_size, val);
-        else
-            erase(end() - (vector_size - newsize), end());
-    }
-
-    void resize(size_type newsize) { resize(newsize, type()); }
-
-    pointer data() { return buff; }
-    const_pointer data() const { return buff; }
-
-    reference front() { return buff[0]; }
-    reference back()  { return buff[vector_size - 1]; }
-    iterator begin()  { return buff; }
-    iterator end()    { return buff + vector_size; }
-
-    const_reference front() const { return buff[0]; }
-    const_reference back() const  { return buff[vector_size - 1]; }
-    const_iterator begin() const  { return buff; }
-    const_iterator end() const    { return buff + vector_size; }
-
-    void push_back(const_reference val) { insert(end(), val); }
-    void pop_back() { erase(end() - 1); }
-
-    size_type size() const { return vector_size; }
-    size_type capacity() const { return buff_size; }
-    allocator_type get_allocator() const { return alloc; }
-    size_type max_size() const { return alloc.max_size(); }
-
-    vector <type> & operator =(const vector <type> v)
-    {
-        assign(v);
-        return *this;
-    }
-
-    reference operator [] (size_type pos)
-        { return *(begin() + pos); }
-
-    const_reference operator [] (size_type pos) const
-        { return *(begin() + pos); }
-
-    reference at(size_type pos)
-    {
-        if (pos >= vector_size)
-            std::bad_alloc("[vector] invalid vector<T> subscript");
-
-        return *(begin() + pos);
-    }
-
-    const_reference at(size_type pos) const
-    {
-        if (pos >= vector_size)
-            std::bad_alloc("[vector] invalid vector<T> subscript");
-
-        return *(begin() + pos);
-    }
+    return *(begin() + pos);
+  }
 
 private:
-    pointer buff;
-    size_type vector_size, buff_size;
-    allocator_type alloc;
+  pointer buff;
+  size_type vector_size, buff_size;
+  allocator_type alloc;
 };
 
 } /* std */

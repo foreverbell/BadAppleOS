@@ -59,10 +59,10 @@ call print
 jmp 0:0x9000
 
 disk_fatal:
-	mov si, disk_fl_msg
-	call print
-	cli
-	hlt
+  mov si, disk_fl_msg
+  call print
+  cli
+  hlt
 
 ; utilities
 %include "print.asm"

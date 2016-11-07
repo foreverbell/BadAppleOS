@@ -1,20 +1,20 @@
 [extern _isr_dispatcher]
 
 %macro isr 1
-	global _isr_handler%1
-	_isr_handler%1:
-		cli
-		push 0      ; dummy error code
-		push %1     ; exception index
-		jmp isr_routine
+  global _isr_handler%1
+  _isr_handler%1:
+    cli
+    push 0      ; dummy error code
+    push %1     ; exception index
+    jmp isr_routine
 %endmacro
 
 %macro isr_ec 1     ; with error code
-	global _isr_handler%1
-	_isr_handler%1:
-		cli
-		push %1
-		jmp isr_routine
+  global _isr_handler%1
+  _isr_handler%1:
+    cli
+    push %1
+    jmp isr_routine
 %endmacro
 
 isr 0
@@ -38,18 +38,18 @@ isr 17
 isr 18
 
 isr_routine:
-	pushad
-	push ds
-	push es
-	push fs
-	push gs
-	push esp      ; as parameter of isr_dispatcher
-	call _isr_dispatcher
-	pop esp
-	pop gs
-	pop fs
-	pop es
-	pop ds
-	popad
-	add esp, 0x8  ; pop error code & exception index
-	iret
+  pushad
+  push ds
+  push es
+  push fs
+  push gs
+  push esp      ; as parameter of isr_dispatcher
+  call _isr_dispatcher
+  pop esp
+  pop gs
+  pop fs
+  pop es
+  pop ds
+  popad
+  add esp, 0x8  ; pop error code & exception index
+  iret

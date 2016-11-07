@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 namespace mm {
-	
+
 void *sbrk(ptrdiff_t);
 
 } /* mm */

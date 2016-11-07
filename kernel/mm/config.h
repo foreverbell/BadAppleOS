@@ -19,8 +19,8 @@
 #define USE_LOCKS      0
 
 #define ABORT          panic::panic("Error in dlmalloc " __FILE__, __LINE__)
-#define EINVAL	       0
-#define ENOMEM 	       0
+#define EINVAL         0
+#define ENOMEM         0
 
 #define MORECORE       mm::sbrk
 

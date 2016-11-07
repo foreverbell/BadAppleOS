@@ -28,7 +28,7 @@ void irq_handler15();
 }
 
 namespace irq {
-	
+
 namespace {
 
 #define IRQ_VECTOR_OFFSET 32
@@ -37,127 +37,127 @@ namespace {
 fn_irq_handler_t lpfn_irq_handler[MAX_IRQ_ENTRY];
 
 void dispatcher(irq_context_t *ptr) {
-	int irq_index = ptr->irq_index;
-	fn_irq_handler_t handler = lpfn_irq_handler[irq_index];
+  int irq_index = ptr->irq_index;
+  fn_irq_handler_t handler = lpfn_irq_handler[irq_index];
 
-	if (handler == NULL) {
-		printf("[IRQ dispatcher] Unhandled IRQ %d.\n", irq_index);
-	} else {
-		handler(ptr);
-	}
+  if (handler == NULL) {
+    printf("[IRQ dispatcher] Unhandled IRQ %d.\n", irq_index);
+  } else {
+    handler(ptr);
+  }
 
-	/* send an EOI (end of interrupt) to indicate that we are done. */
-	if (irq_index >= 8) {
-		port::outb(PORT_SLAVE_PIC_CMD, 0x20);
-	}
-	port::outb(PORT_MASTER_PIC_CMD, 0x20);
+  /* send an EOI (end of interrupt) to indicate that we are done. */
+  if (irq_index >= 8) {
+    port::outb(PORT_SLAVE_PIC_CMD, 0x20);
+  }
+  port::outb(PORT_MASTER_PIC_CMD, 0x20);
 }
 
 }
 
 void initialize(void) {
-	/* remap IRQ to proper IDT entries (32 ~ 47) */
-	port::outb(PORT_MASTER_PIC_CMD, 0x11);
-	port::outb(PORT_SLAVE_PIC_CMD, 0x11);
-	port::outb(PORT_MASTER_PIC_DAT, IRQ_VECTOR_OFFSET);     // vector offset for master PIC is 32
-	port::outb(PORT_SLAVE_PIC_DAT, IRQ_VECTOR_OFFSET + 8);  // vector offset for slave PIC is 40
-	port::outb(PORT_MASTER_PIC_DAT, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
-	port::outb(PORT_SLAVE_PIC_DAT, 0x2);                    // tell slave PIC its cascade identity
-	port::outb(PORT_MASTER_PIC_DAT, 0x1);
-	port::outb(PORT_SLAVE_PIC_DAT, 0x1);
-	/* disable all IRQs by default. */
-	port::outb(PORT_MASTER_PIC_DAT, 0xff);
-	port::outb(PORT_SLAVE_PIC_DAT, 0xff);
+  /* remap IRQ to proper IDT entries (32 ~ 47) */
+  port::outb(PORT_MASTER_PIC_CMD, 0x11);
+  port::outb(PORT_SLAVE_PIC_CMD, 0x11);
+  port::outb(PORT_MASTER_PIC_DAT, IRQ_VECTOR_OFFSET);     // vector offset for master PIC is 32
+  port::outb(PORT_SLAVE_PIC_DAT, IRQ_VECTOR_OFFSET + 8);  // vector offset for slave PIC is 40
+  port::outb(PORT_MASTER_PIC_DAT, 0x4);                   // tell master PIC that there is a slave PIC at IRQ2
+  port::outb(PORT_SLAVE_PIC_DAT, 0x2);                    // tell slave PIC its cascade identity
+  port::outb(PORT_MASTER_PIC_DAT, 0x1);
+  port::outb(PORT_SLAVE_PIC_DAT, 0x1);
+  /* disable all IRQs by default. */
+  port::outb(PORT_MASTER_PIC_DAT, 0xff);
+  port::outb(PORT_SLAVE_PIC_DAT, 0xff);
 
-	/* initialize ISR to correct entries in the IDT. */
+  /* initialize ISR to correct entries in the IDT. */
 #define set_irq(n) idt::set_gate(n + IRQ_VECTOR_OFFSET, (uint32_t) irq_handler##n, KERNEL_CODE_SEL, 0x8e);
-	set_irq(0);
-	set_irq(1);
-	set_irq(2);
-	set_irq(3);
-	set_irq(4);
-	set_irq(5);
-	set_irq(6);
-	set_irq(7);
-	set_irq(8);
-	set_irq(9);
-	set_irq(10);
-	set_irq(11);
-	set_irq(12);
-	set_irq(13);
-	set_irq(14);
-	set_irq(15);
+  set_irq(0);
+  set_irq(1);
+  set_irq(2);
+  set_irq(3);
+  set_irq(4);
+  set_irq(5);
+  set_irq(6);
+  set_irq(7);
+  set_irq(8);
+  set_irq(9);
+  set_irq(10);
+  set_irq(11);
+  set_irq(12);
+  set_irq(13);
+  set_irq(14);
+  set_irq(15);
 #undef set_irq
 
-	memset(lpfn_irq_handler, 0, sizeof(lpfn_irq_handler));
+  memset(lpfn_irq_handler, 0, sizeof(lpfn_irq_handler));
 }
 
 /* install an IRQ handler. */
 void install(int index, fn_irq_handler_t handler) {
-	if (lpfn_irq_handler[index] != NULL) {
-		printf("[irq::install] IRQ%d handler already exists, overwritten.\n", index);	
-	}
-	lpfn_irq_handler[index] = handler;
+  if (lpfn_irq_handler[index] != NULL) {
+    printf("[irq::install] IRQ%d handler already exists, overwritten.\n", index);
+  }
+  lpfn_irq_handler[index] = handler;
 }
 
 /* uninstall an IRQ handler. */
 void uninstall(int index) {
-	if (lpfn_irq_handler[index] == NULL) {
-		printf("[irq::uninstall] IRQ%d handler not exists.\n", index);
-	}
-	lpfn_irq_handler[index] = NULL;
+  if (lpfn_irq_handler[index] == NULL) {
+    printf("[irq::uninstall] IRQ%d handler not exists.\n", index);
+  }
+  lpfn_irq_handler[index] = NULL;
 }
 
 /* disable an IRQ by setting mask. */
 void disable(int index) {
-	uint16_t port;
-	uint8_t value;
+  uint16_t port;
+  uint8_t value;
 
-	if (index < 8) {
-		port = PORT_MASTER_PIC_DAT;
-	} else {
-		port = PORT_SLAVE_PIC_DAT;
-		index -= 8;
-	}
-	value = port::inb(port) | (1 << index);
-	port::outb(port, value);
+  if (index < 8) {
+    port = PORT_MASTER_PIC_DAT;
+  } else {
+    port = PORT_SLAVE_PIC_DAT;
+    index -= 8;
+  }
+  value = port::inb(port) | (1 << index);
+  port::outb(port, value);
 }
 
 /* enable an IRQ by clearing mask. */
 void enable(int index) {
-	uint16_t port;
-	uint8_t value;
+  uint16_t port;
+  uint8_t value;
 
-	if (index < 8) {
-		port = PORT_MASTER_PIC_DAT;
-	} else {
-		port = PORT_SLAVE_PIC_DAT;
-		index -= 8;
-	}
-	value = port::inb(port) & ~(1 << index);
-	port::outb(port, value);
+  if (index < 8) {
+    port = PORT_MASTER_PIC_DAT;
+  } else {
+    port = PORT_SLAVE_PIC_DAT;
+    index -= 8;
+  }
+  value = port::inb(port) & ~(1 << index);
+  port::outb(port, value);
 }
 
 void disable_mask(int mask) {
-	for (int i = 0; i < 16; ++i) {
-		if (mask & 1) {
-			disable(i);
-		}
-		mask >>= 1;
-	}
+  for (int i = 0; i < 16; ++i) {
+    if (mask & 1) {
+      disable(i);
+    }
+    mask >>= 1;
+  }
 }
 
 void enable_mask(int mask) {
-	for (int i = 0; i < 16; ++i) {
-		if (mask & 1) {
-			enable(i);
-		}
-		mask >>= 1;
-	}
+  for (int i = 0; i < 16; ++i) {
+    if (mask & 1) {
+      enable(i);
+    }
+    mask >>= 1;
+  }
 }
 
-} /* irq */ 
+} /* irq */
 
 asmlinkage void irq_dispatcher(irq::irq_context_t *ptr) {
-	irq::dispatcher(ptr);
+  irq::dispatcher(ptr);
 }

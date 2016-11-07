@@ -10,37 +10,37 @@
 extern void play(void);
 
 namespace {
-	
+
 void idle(void) {
-	while (true) {
-		cpu::manipulate::halt();
-	}
+  while (true) {
+    cpu::manipulate::halt();
+  }
 }
 
 }
- 
-asmlinkage void kinitialize(void) {	
-	/* console: no cursor, and no blink text. */
-	console::initialize(false, false);
-	puts("Successfully landed to protected mode.");
 
-	cpu::initialize();
-	gdt::initialize();
-	mm::initialize();
-	idt::initialize();
-	isr::initialize();
-	irq::initialize();
-	timer::initialize();
-	
-	/* call all C++ constructors. */
-	abi::ctors();
+asmlinkage void kinitialize(void) {
+  /* console: no cursor, and no blink text. */
+  console::initialize(false, false);
+  puts("Successfully landed to protected mode.");
 
-	/* enable interrupt. */
-	cpu::manipulate::sti(); 
+  cpu::initialize();
+  gdt::initialize();
+  mm::initialize();
+  idt::initialize();
+  isr::initialize();
+  irq::initialize();
+  timer::initialize();
 
-	/* play our BadApple animation. */
-	play();
-	
-	/* execute idle process. */
-	idle();
+  /* call all C++ constructors. */
+  abi::ctors();
+
+  /* enable interrupt. */
+  cpu::manipulate::sti();
+
+  /* play our BadApple animation. */
+  play();
+
+  /* execute idle process. */
+  idle();
 }

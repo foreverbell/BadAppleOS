@@ -4,5 +4,5 @@
 [bits 32]
 
 begin:
-	jmp _kinitialize
-	; never be here
+  jmp _kinitialize
+  ; never be here

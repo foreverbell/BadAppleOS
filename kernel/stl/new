@@ -9,49 +9,49 @@
 namespace std {
 
 inline void bad_alloc(const char *what = NULL) {
-	if (what == NULL) {
-		panic::panic("Bad alloc.");
-	}
-	panic::panic(what);
+  if (what == NULL) {
+    panic::panic("Bad alloc.");
+  }
+  panic::panic(what);
 }
 
 } /* std */
 
 inline void *operator new(size_t n) {
-	void *p = malloc(n);
-	mm::log_new(n, p);
-	if (p == NULL) {
-		std::bad_alloc();
-	}
-	return p;
+  void *p = malloc(n);
+  mm::log_new(n, p);
+  if (p == NULL) {
+    std::bad_alloc();
+  }
+  return p;
 }
 
 inline void *operator new [](size_t n) {
-	void *p = malloc(n);
-	mm::log_new(n, p);
-	if (p == NULL) {
-		std::bad_alloc();
-	}
-	return p;
+  void *p = malloc(n);
+  mm::log_new(n, p);
+  if (p == NULL) {
+    std::bad_alloc();
+  }
+  return p;
 }
 
 inline void operator delete(void *p) {
-	mm::log_delete(p);
-	return free(p);
+  mm::log_delete(p);
+  return free(p);
 }
 
 inline void operator delete [](void *p) {
-	mm::log_delete(p);
-	return free(p);
+  mm::log_delete(p);
+  return free(p);
 }
 
 /* placement new. */
 inline void *operator new(size_t, void *p) { 
-	return p; 
+  return p; 
 }
 
 inline void *operator new [](size_t, void *p) {
-	return p; 
+  return p; 
 }
 
 inline void operator delete(void *, void *)  { }
