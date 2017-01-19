@@ -24,7 +24,6 @@ asmlinkage void kinitialize(void) {
   console::initialize(false, false);
   puts("Successfully landed to protected mode.");
 
-  cpu::initialize();
   gdt::initialize();
   mm::initialize();
   idt::initialize();

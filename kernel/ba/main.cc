@@ -21,7 +21,7 @@ badapple::video v;
 void play(void) {
   const int fps = 9;
 
-  timer::add(TIMER_TICK_PER_SECOND, [&](uint64_t count, handle_t h) -> void {
+  timer::add(TIMER_TICK_PER_SECOND, [](uint64_t count, handle_t h) {
     if (count < 3) {
       printf("\rBadApple, %d second(s) to go", 3 - count);
       for (uint64_t i = 0; i <= count; ++i) {
@@ -29,7 +29,7 @@ void play(void) {
       }
     } else {
       timer::remove(h);
-      timer::add(TIMER_TICK_PER_SECOND / fps, [&](uint64_t, handle_t h) -> void {
+      timer::add(TIMER_TICK_PER_SECOND / fps, [](uint64_t, handle_t h) {
         if (v.has_next()) {
           v.next();
           printf(" (%d%%) ", v.progress());
@@ -41,7 +41,7 @@ void play(void) {
           console::clear();
           printf("Thank you for watching!\n");
           printf("Repository can be found at https://github.com/foreverbell/BadAppleOS.\n");
-          timer::add(1, [&](uint64_t, handle_t) -> void {
+          timer::add(1, [](uint64_t, handle_t) -> void {
             systime_t *st = get_systime(NULL);
             printf("\rCurrent system time = %d/%02d/%02d %02d:%02d:%02d.",
               st->year, st->month, st->day,

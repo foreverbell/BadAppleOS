@@ -1,7 +1,7 @@
 VIDEO_RAW = ../resource/video.txt
 
 ASFLAGS = -f elf
-CCFLAGS = -std=c++11 -O2 -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
+CCFLAGS = -std=c++11 -O2 -ffreestanding -fno-builtin -fno-pic -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
 LDFLAGS = -T link.ld -mi386pe
 OCFLAGS = -Obinary
 

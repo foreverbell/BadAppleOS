@@ -1,7 +1,7 @@
 OSIMG = os.img
 
 ASFLAGS = -f elf
-CCFLAGS = -ffreestanding -fno-builtin -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -fno-toplevel-reorder -Wall -Wextra
+CCFLAGS = -ffreestanding -fno-builtin -fno-pic -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -fno-toplevel-reorder -Wall -Wextra
 LDFLAGS = -T link.ld -mi386pe
 OCFLAGS = -Obinary
 

@@ -5,8 +5,6 @@
 
 namespace cpu {
 
-void initialize(void);
-
 namespace manipulate {
 
 void cli(void);
@@ -30,14 +28,6 @@ private:
 };
 
 } /* manipulate */
-
-namespace cpuid {
-
-bool support();
-void vendor(char *);
-void feature(int *, int *);
-
-} /* cpuid */
 
 namespace power {
 
