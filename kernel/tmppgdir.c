@@ -1,3 +1,6 @@
+// This file should be compiled as C, as non-trivial designated initializers are
+// not supported in `g++`.
+
 #include <stdint.h>
 
 #define KERNEL_BASE   0xC0000000

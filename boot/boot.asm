@@ -72,7 +72,7 @@ start_32:
   mov esp, ebp
 
   ; execute kernel
-  jmp 0x10000
+  jmp 0x1000c    ; skip the multiboot header
 
 [bits 16]
 

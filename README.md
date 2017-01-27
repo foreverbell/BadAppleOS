@@ -16,21 +16,20 @@ In the summer of 2014, I have some spare time, so I decide to relearn something 
 
 # Highlight
 
-* Mixing 16bit Assembly and C++ code in the middleware `middle` (switching to protected mode).
-* Except some necessary booting code written in Assembly, other code is purely written in C++(11). 
+* Except some necessary booting code written in Assembly and C, other code is purely written in C++(11). 
 * A minimal STL port.
 * Artify the plain text to a great ASCII Art. 
 * ... and this operating system is only 180K (depends on your compiler)!
 
 # Toolchains
 
-It is developed under Windows, though I think it would also work under Linux (Actually I have tested it under Ubuntu 14.0.2).
+Tested under Ubuntu 16.10 (yakkety).
 
 The toolchains follow here, 
 
-* gcc (4.9.2, x86\_64-pc-msys)
-* nasm (2.11.08)
-* python2
+* gcc (6.2.0)
+* nasm (2.12.01)
+* python (2.7)
 
 I don't guarantee other versions of toolchains will work.
 
@@ -41,6 +40,10 @@ A runnable build can be found [here](https://github.com/foreverbell/miscellaneou
 To build, see `makefile`, then create a new VMware virtual machine (or other virtual machines) with the build `os.img` as floppy image.
 
 You can also burn it on your USB, and enjoy the BadApple on your real computer :)
+
+# TODO
+
+Multiboot header support to make it compatible with grub.
 
 # License 
 

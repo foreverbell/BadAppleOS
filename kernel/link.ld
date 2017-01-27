@@ -1,10 +1,12 @@
-ENTRY(begin)
+entry = 0x1000c;    /* physical address of entry point. */
+                    /* 0xc for multiboot header. */
+ENTRY(entry)
 STARTUP(begin.o)
 SECTIONS
 {
   . = 0xC0000000;
 
-  .text : AT(0x100000) {
+  .text : AT(entry - 0xc) {
     code = .;
     *(.code)
     . = ALIGN(4);

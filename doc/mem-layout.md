@@ -8,7 +8,6 @@ Address                 Memory
 2000h ~ 6000h           Page Table Entries
 7C00h ~ 7E00h           Boot loader
 8000h ~ ?????           Store the result of memory detection via `int 15h`
-9000h ~ B000h           Middleware (for switching to protected mode), 8K
 FFFFh ~ B000h           Kernel stack, 20K [^1]
 10000h ~ 90000h         Kernel, 512K [^2]
 100000h ~ 900000h       Kernel memory pool, 8M
@@ -20,7 +19,9 @@ Table: Physical memory layout
 
 ## Virtual Memory Layout
 
-Paging is setup and initialized in middle stage. 
+Bootstrap PDE and PTE are hardcoded in `tmppgdir.c`.
+
+The whole PDE and PTE are initialized in `kernel/mm/init.cc`.
 
 PDE is located at phyaddr 1000h ~ 2000h. 
 
