@@ -11,10 +11,13 @@ kernel:
 	
 run: $(OSIMG)
 	bochs -q -f bochsrc
-	
+
 debug: $(OSIMG)
 	bochsdbg -q -f bochsrc
-	
+
+qemu: $(OSIMG)
+	qemu-system-i386 -drive file=build/os.img,index=0,media=disk,format=raw
+
 dump:
 	cd boot && make dump && cd ..
 	cd kernel && make dump && cd ..
@@ -25,4 +28,4 @@ clean:
 	rm build/*.bin
 	rm $(OSIMG)
 
-.PHONY: all boot kernel run clean dump
+.PHONY: all boot kernel run debug qemu dump clean
