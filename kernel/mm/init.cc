@@ -3,83 +3,80 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <memory.h>
-#include <algorithm>
-
-using std::sort;
+#include <port.h>
 
 namespace mm {
 
+/*
+ * To be simple, we reuse physical memory of [0x1000, 0x6000) for PDE and PTE.
+ * Physical memory layout of PDE && PTE.
+ *   [0x1000, 0x2000) PDE
+ *   [0x2000, 0x3000) PTE1
+ *   [0x3000, 0x4000) PTE2
+ *   [0x4000, 0x5000) PTE3
+ *   [0x5000, 0x6000) PTE4
+ */
+
+#define PAGE_PRESENT 1
+#define PAGE_RW      2
+
 namespace {
 
-#pragma pack(push, 1)
-struct mm_descriptor_t {
-  uint64_t base;
-  uint64_t length;
-  uint32_t type;
-  uint32_t acpi; // not used
-} __attribute__((packed));
-#pragma pack(pop)
+uint32_t * const pde_addr = (uint32_t *) 0x1000;
 
-int descriptor_count;
-mm_descriptor_t *descriptors;
+/* mapping (base_addr, base_addr+to*4K) to index*4M. */
+void initialize_pte(int index, uint32_t pte_addr, int from, int to, uint32_t base_addr) {
+  pde_addr[index] = pte_addr | PAGE_PRESENT | PAGE_RW;
+  uint32_t *p = (uint32_t *) pte_addr;
+
+  for (int i = 0; i < 1024; ++i) {
+    p[i] = 0;
+    if (i >= from && i < to) {
+      p[i] = ((i << 12) + base_addr) | PAGE_PRESENT | PAGE_RW;
+    }
+  }
+}
 
 }
 
 void initialize(void) {
-  const char *spearate_l1 = "+------------+------------+------+------+";
-  const char *spearate_l2 = "+============+============+======+======+";
+  size_t basemem, extmem, ext16mem, totalmem;
 
-  descriptor_count = (int) *(uint32_t *) 0x8000;
-  descriptors = (mm_descriptor_t *) 0x8004;
+  /* use CMOS calls to measure available base & extended memory. */
+  /* measured in kilobytes. */
+  basemem = cmos::read(PORT_NVRAM_BASELO) + (cmos::read(PORT_NVRAM_BASEHI) << 8);
+  extmem = cmos::read(PORT_NVRAM_EXTLO) | (cmos::read(PORT_NVRAM_EXTHI) << 8);
+  ext16mem = (cmos::read(PORT_NVRAM_EXT16LO) | (cmos::read(PORT_NVRAM_EXT16HI) << 8)) << 6;
 
-  printf("Memory descriptor count = %d.\n", descriptor_count);
-
-  /* std::sort doesn't rely on memory allocation. So it is guaranteed to be safe. */
-  sort(descriptors, descriptors + descriptor_count, [&](const mm_descriptor_t &a, const mm_descriptor_t &b) -> bool {
-    return a.base < b.base;
-  });
-
-  /* aligned by page size. */
-  for (int i = 0; i < descriptor_count; ++i) {
-    uint64_t base = descriptors[i].base;
-    uint64_t length = descriptors[i].length;
-
-    if (base & 0xfff) {
-      base = (base & ~0xfffll) + 0x1000;
-    }
-    if (length & 0xfff) {
-      length = length & ~0xfffll;
-    }
-    descriptors[i].base = base;
-    descriptors[i].length = length;
+  if (ext16mem) {
+    totalmem = 16 * 1024 + ext16mem;
+  } else if (extmem) {
+    totalmem = 1 * 1024 + extmem;
+  } else {
+    totalmem = basemem;
   }
 
-  /* check if all lengths are below 4G, and memory ranges not overlap. */
-  for (int i = 0; i < descriptor_count; ++i) {
-    assert((descriptors[i].length >> 32) == 0);
-    if (i != 0) {
-      assert(descriptors[i - 1].base + descriptors[i - 1].length <= descriptors[i].base);
-    }
+  printf("Physical memory: %uK available, base = %uK, extended = %uK\n", totalmem, basemem, totalmem - basemem);
+
+  /* reinitialize PDE and PTE. */
+
+  /* clear all PDE entries. */
+  for (int i = 0; i < 1024; ++i) {
+    pde_addr[i] = 0;
   }
 
-  puts(spearate_l1);
-  puts("|    base    |   length   | type | free |");
-  puts(spearate_l2);
+  /* set lower 1M memory as identity paging. */
+  initialize_pte(0, 0x2000, 0, 256, 0);
 
-  uint32_t sum = 0;
+  /* 0xC0000000 ~ 0xC0080000 for kernel (physical 0x10000 ~ 0x90000), 512K. */
+  initialize_pte(768, 0x3000, 0, 128, 0x10000);
 
-  for (int i = 0; i < descriptor_count; ++i) {
-    /* free iff type is available RAM usable && upper memory. */
-    bool free = (descriptors[i].type == 1 && descriptors[i].base >= 0x100000);
+  /* 0xC0400000 ~ 0xC0C00000 for memory pool (physical 0x100000 ~ 0x900000), 8M, two entries. */
+  initialize_pte(769, 0x4000, 0, 1024, 0x100000);
+  initialize_pte(770, 0x5000, 0, 1024, 0x500000);
 
-    if (free) {
-      sum += descriptors[i].length;
-    }
-    printf("| 0x%08x | 0x%08x |   %d  |   %c  |\n",
-      (uint32_t) descriptors[i].base, (uint32_t) descriptors[i].length, descriptors[i].type, free ? 'Y' : 'N');
-  }
-  puts(spearate_l1);
-  printf("Total free memory = %uM.\n", sum / 1024 / 1024);
+  /* reload the new page directory. */
+  __asm__ __volatile__ ("movl %0, %%cr3" : : "r" (pde_addr));
 }
 
 } /* mm */

@@ -1,12 +1,13 @@
 VIDEO_RAW = ../resource/video.txt
 
 ASFLAGS = -f elf
-CCFLAGS = -std=c++11 -O2 -ffreestanding -fno-builtin -fno-pic -nostdinc -fno-exceptions -fleading-underscore -fno-rtti -I./include -I./stl -Wall -Wextra
+CFLAGS = -O2 -ffreestanding -fno-builtin -fno-pic -nostdinc -fno-exceptions -fleading-underscore -I./include -I./stl -Wall -Wextra
+CCFLAGS = -std=c++11 -fno-rtti $(CFLAGS)
 LDFLAGS = -T link.ld -mi386pe
 OCFLAGS = -Obinary
 
 AS = nasm
-CC = g++
+CC = gcc
 LD = ld
 OC = objcopy
 
@@ -24,15 +25,18 @@ CC_OBJECTS := \
 
 all: kernel.bin
 
-kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) begin.o vdata.o
-	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) vdata.o
+kernel.bin: $(AS_OBJECTS) $(CC_OBJECTS) begin.o tmppgdir.o vdata.o
+	$(LD) -o kernel.out $(LDFLAGS) $(AS_OBJECTS) $(CC_OBJECTS) tmppgdir.o vdata.o
 	$(OC) $(OCFLAGS) kernel.out kernel.bin	
 	rm kernel.out
 	cp kernel.bin ../build/kernel.bin
 
 begin.o: begin.asm
 	$(AS) -o begin.o $(ASFLAGS) begin.asm
-	
+
+tmppgdir.o: tmppgdir.c
+	$(CC) -m32 -c -o tmppgdir.o $(CFLAGS) tmppgdir.c
+
 vdata.bin: 
 	python ../script/encode.py $(VIDEO_RAW) vdata.bin
 
@@ -49,7 +53,7 @@ dump:
 	ndisasm -b32 -oC0000000h kernel.bin > dump.txt
 
 clean:
-	rm begin.o vdata.o init.o
+	rm begin.o vdata.o init.o tmppgdir.o
 	rm ba/*.o
 	rm krnl/*.o
 	rm krnl/abi/*.o

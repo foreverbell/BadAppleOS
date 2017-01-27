@@ -3,8 +3,8 @@ STARTUP(begin.o)
 SECTIONS
 {
   . = 0xC0000000;
-  .text :
-  {
+
+  .text : AT(0x100000) {
     code = .;
     *(.code)
     . = ALIGN(4);
@@ -12,14 +12,14 @@ SECTIONS
     *(.rodata)
     . = ALIGN(4);
   }
-  .data :
-  {
+
+  .data : {
     data = .;
     *(.data)
     . = ALIGN(4);
   }
-  .ctors :
-  {
+
+  .ctors : {
     ___CTOR_LIST__ = .;
     LONG((___CTOR_END__ - ___CTOR_LIST__) / 4 - 2)
     *(.ctors)
@@ -36,11 +36,12 @@ SECTIONS
 
     . = ALIGN(4);
   }
-  .bss :
-  {
+
+  .bss : {
     bss = .;
     *(.bss)
     . = ALIGN(4);
-  }  
+  }
+
   end = .;
 }

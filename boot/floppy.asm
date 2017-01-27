@@ -33,7 +33,7 @@ load:
   push bp
   mov bp, sp
   pusha
-  
+
   mov ax, [bp + 4] ; sectors to read
   xor bx, bx
   mov dx, [bp + 6] ; load to where?
@@ -55,7 +55,7 @@ load_loop:
   add dx, 0x100
   xor bx, bx
   jmp load_loop
-  
+
 load_ok:
   popa
   pop bp

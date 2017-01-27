@@ -15,6 +15,13 @@ namespace port {
 #define PORT_PIT_CHANNEL2   0x42
 #define PORT_PIT_CMD        0x43
 
+#define PORT_NVRAM_BASELO   0x15
+#define PORT_NVRAM_BASEHI   0x16
+#define PORT_NVRAM_EXTLO    0x17
+#define PORT_NVRAM_EXTHI    0x18
+#define PORT_NVRAM_EXT16LO  0x34
+#define PORT_NVRAM_EXT16HI  0x35
+
 #define PORT_CMOS_CMD       0x70
 #define PORT_CMOS_DAT       0x71
 

@@ -1,14 +1,6 @@
-[bits 16]
-
-[global gdt_descriptor]
-[global cseg]
-[global dseg]
-
-[section .data]
-
 gdt_start:
 
-gdt_dummy:
+gdt_null:
   dd 0x0
   dd 0x0
 
@@ -31,8 +23,8 @@ gdt_data:
 gdt_end:
 
 gdt_descriptor:
-  dw gdt_end - gdt_start - 1  ; limit
-  dd gdt_start                ; base
+  dw gdt_end - gdt_start - 1    ; limit
+  dd gdt_start                  ; base
 
 cseg equ gdt_code - gdt_start   ; code segment
 dseg equ gdt_data - gdt_start   ; data segment

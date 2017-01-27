@@ -2,47 +2,33 @@
 # -*- coding: utf-8 -*-
 
 import os, sys
-from subprocess import call
 
-binary = sys.argv[1:4]
-output = sys.argv[4]
+boot = sys.argv[1]
+kernel = sys.argv[2]
+output = sys.argv[3]
 
-size = [os.stat(binary[i]).st_size for i in xrange(0, 3)]
-size_aligned = [0, 0, 0]
+boot_size = os.stat(boot).st_size
+kernel_size = os.stat(kernel).st_size
 
-assert size[0] == 512
-size_aligned[0] = size[0]
+assert boot_size == 512
 
-size_aligned[1] = (size[1] - 1) / 512 + 1
-while (size_aligned[1] % 8 != 7):
-  size_aligned[1] += 1
-size_aligned[1] *= 512
+new_kernel_size = (kernel_size + 512 - 1) / 512 * 512
 
-size_aligned[2] = (size[2] - 1) / 4096 + 1
-size_aligned[2] *= 4096
+print "Kernel size %d -> %d." % (kernel_size, new_kernel_size)
+with open(kernel, "ab") as f:
+  padding = new_kernel_size - kernel_size
+  assert padding >= 0
+  f.write(bytearray(padding))
 
-for i in xrange(0, 3):
-  print "The original size of binary %s is %d, aligned to %d." % (binary[i], size[i], size_aligned[i])
-  with open(binary[i], "ab") as f:
-    padding = size_aligned[i] - size[i]
-    assert padding >= 0
-    f.write(bytearray(padding))
-
-print "Linking."
-with open(binary[0], "r+b") as f:
+print "Populating 'kernel_sectors' in bootloader."
+with open(boot, "r+b") as f:
   f.seek(2)
-  s1 = size_aligned[1] / 512
-  s2 = size_aligned[2] / 512
-  assert (s1 * 512 == size_aligned[1])
-  assert (s2 * 512 == size_aligned[2])
-  bytes4 = [
-    s1 & 0xff, 
-    s1 >> 8,
-    s2 & 0xff, 
-    s2 >> 8,
-  ]
-  f.write(bytearray(bytes4))
+  assert new_kernel_size % 512 == 0
+  nsectors = new_kernel_size / 512
+  print "nsectors = %d." % nsectors
+  bytes2 = [ nsectors % 256, nsectors / 256 ]
+  f.write(bytearray(bytes2))
 
-os.system("cat %s %s %s > %s" % tuple(sys.argv[1:5]))
+os.system("cat %s %s > %s" % (boot, kernel, output))
 
 print "Done!"
