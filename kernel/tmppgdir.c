@@ -1,5 +1,5 @@
 // This file should be compiled as C, as non-trivial designated initializers are
-// not supported in `g++`.
+// not supported in C++.
 
 #include <stdint.h>
 

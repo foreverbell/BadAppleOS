@@ -1,13 +1,13 @@
-OSIMG = build/os.img
+OSIMG := build/os.img
 
 all: boot kernel
-	python script/link.py build/boot.bin build/kernel.bin $(OSIMG)
+	python link.py build/boot.bin build/kernel.bin $(OSIMG)
 
 boot: 
-	cd boot && make && cd ..
+	cd boot && make
 	
 kernel: 
-	cd kernel && make && cd ..
+	cd kernel && make
 	
 run: $(OSIMG)
 	bochs -q -f bochsrc
@@ -19,13 +19,12 @@ qemu: $(OSIMG)
 	qemu-system-i386 -drive file=build/os.img,index=0,media=disk,format=raw
 
 dump:
-	cd boot && make dump && cd ..
-	cd kernel && make dump && cd ..
+	cd boot && make dump
+	cd kernel && make dump
 	
 clean:
-	cd boot && make clean && cd ..
-	cd kernel && make clean && cd ..
-	rm build/*.bin
-	rm $(OSIMG)
+	cd boot && make clean
+	cd kernel && make clean
+	rm -rf build
 
 .PHONY: all boot kernel run debug qemu dump clean

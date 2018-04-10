@@ -7,8 +7,9 @@
 
 namespace mm {
 
-/*
+/**
  * To be simple, we reuse physical memory of [0x1000, 0x6000) for PDE and PTE.
+ *
  * Physical memory layout of PDE && PTE.
  *   [0x1000, 0x2000) PDE
  *   [0x2000, 0x3000) PTE1

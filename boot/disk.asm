@@ -1,4 +1,5 @@
-; @document: http://wiki.osdev.org/ATA_in_x86_RealMode_(BIOS).
+; Refer to http://wiki.osdev.org/ATA_in_x86_RealMode_(BIOS) for full
+; documentation.
 
 ; @function: detect
 ; @brief: detect drive parameters via int 13h, ah=8h.
@@ -11,11 +12,11 @@ detect:
   mov ah, 0x8
   mov dl, [boot_drive]
   int 0x13
-  jnc detect_ok
+  jnc .ok
   popa
-  ret          ; use default floppy parameters
+  ret  ; use default floopy
 
-detect_ok:
+.ok:
   mov dl, dh
   xor dh, dh
   inc dx
@@ -34,14 +35,14 @@ load:
   mov bp, sp
   pusha
 
-  mov ax, [bp + 4] ; sectors to read
+  mov ax, [bp + 4]  ; sectors to read
   xor bx, bx
-  mov dx, [bp + 6] ; load to where?
-  mov cx, [bp + 8] ; start sector
+  mov dx, [bp + 6]  ; load to where?
+  mov cx, [bp + 8]  ; start sector
 
-load_loop:
+.loop:
   cmp ax, 0
-  je load_ok
+  je .ok
   push cx
   push dx
   push bx
@@ -51,18 +52,18 @@ load_loop:
   add bx, 0x200
   inc cx
   cmp bx, 0x1000
-  jne load_loop
+  jne .loop
   add dx, 0x100
   xor bx, bx
-  jmp load_loop
+  jmp .loop
 
-load_ok:
+.ok:
   popa
   pop bp
   ret
 
 ; @function: read
-; @brief: read a sector from the floppy drive.
+; @brief: read a sector from drive.
 ; @parameters: buffer offset, buffer segment, LBA.
 read:
   push bp
@@ -73,7 +74,7 @@ read:
   xor dx, dx
   mov bx, [sectors_per_track]
   div bx
-  inc dx                  ; sector is 1-based
+  inc dx  ; sector is 1-based
   mov [sector_index], dx
   xor dx, dx
   mov bx, [total_heads]
@@ -91,18 +92,18 @@ read:
   mov bx, [cylinder_index]
   shr bx, 2
   and bx, 0xc0
-  or  cl, bl                    ; not necessary for floppy
+  or  cl, bl  ; not necessary for floppy
   mov bx, [head_index]
   mov dh, bl
   mov bx, [bp + 4]
   mov es, [bp + 6]
   mov dl, [boot_drive]
 
-read_loop:
+.loop:
   mov ah, 0x2
   mov al, 0x1
   int 0x13
-  jnc read_ok
+  jnc .ok
 
   ; reset disk drive
   xor ax, ax
@@ -111,10 +112,10 @@ read_loop:
   inc byte [number_retries]
   cmp byte [number_retries], 5  ; retry 5 times
 
-  jne read_loop
-  jmp disk_fatal                ; see boot.asm
+  jne .loop
+  jmp disk_fatal  ; see boot.asm
 
-read_ok:
+.ok:
   popa
   pop bp
   ret
@@ -124,7 +125,6 @@ head_index         dw 0
 cylinder_index     dw 0
 number_retries     db 0
 
-; floppy default value (place holder)
+; floppy default value (place holder, can be overwritten)
 sectors_per_track  dw 18
 total_heads        dw 2
-; total_cylinders  dw 80   ; not need, actually

@@ -5,16 +5,16 @@ print:
   pusha
   mov bx, si
 
-print_loop:
+.loop:
   mov al, [bx]
   cmp al, 0x0
-  je print_fin
-  mov ah, 0xe  ; teletype output
+  je .fin
+  mov ah, 0xe
   int 0x10
   inc bx
-  jmp print_loop
+  jmp .loop
 
-print_fin:
+.fin:
   ; print '\n'
   mov ah, 0x3
   xor bh, bh

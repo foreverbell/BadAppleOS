@@ -46,7 +46,7 @@ start_16:
 
   ; load gdt
   cli
-  lgdt [gdt_descriptor]
+  lgdt [gdt.descriptor]
 
   ; enable protection
   mov eax, cr0
@@ -54,13 +54,13 @@ start_16:
   mov cr0, eax
 
   ; switch to protected mode
-  jmp dword cseg:start_32
+  jmp dword gdt.code:start_32
 
 [bits 32]
 
 start_32:
   ; initialize segment registers
-  mov ax, dseg
+  mov ax, gdt.data
   mov ds, ax
   mov es, ax
   mov fs, ax
@@ -72,7 +72,7 @@ start_32:
   mov esp, ebp
 
   ; execute kernel
-  jmp 0x1000c    ; skip the multiboot header
+  jmp 0x10000
 
 [bits 16]
 
@@ -82,18 +82,13 @@ disk_fatal:
   cli
   hlt
 
-; utilities
 %include "print.asm"
-
-; floppy reader
-%include "floppy.asm"
-
-; gdt
+%include "disk.asm"
 %include "gdt.asm"
 
-boot_drive     db 0
-booting_msg    db "Booting.", 0
-disk_fl_msg    db "Disk error.", 0
+boot_drive  db 0
+booting_msg db "Booting.", 0
+disk_fl_msg db "Disk error.", 0
 
 times 510 - ($ - $$) db 0
 dw 0xaa55
