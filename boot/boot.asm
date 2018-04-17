@@ -67,7 +67,7 @@ start_32:
   mov gs, ax
   mov ss, ax
 
-  ; execute kernel
+  ; execute kernel, skip 0xc bytes for multi-boot header
   jmp 0x1000c
 
 [bits 16]

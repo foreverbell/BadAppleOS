@@ -6,6 +6,7 @@ SECTIONS
 {
   . = 0xc0000000;
 
+  /* AT(phys) for load memory address of this section. */
   .mbheader ALIGN(4) : AT(phys) {
     mbheader = .;
     *(.mbheader)
