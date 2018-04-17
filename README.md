@@ -17,23 +17,34 @@ So it is not an operating system indeed, just a program running on a bare comput
 
 # Toolchains
 
-Tested under Ubuntu 16.10 (yakkety).
+Tested under Ubuntu xenial with the following toolchains,
 
-The toolchains follow here, 
-
-* gcc (6.2.0)
-* nasm (2.12.01)
-* python (2.7)
+* gcc (5.4.0)
+* nasm (2.11.08)
+* python (2.7.12)
 
 I don't guarantee other versions of toolchains will work.
 
-# Usage
+# Build
 
-A runnable build can be found [here](https://github.com/foreverbell/miscellaneous/raw/master/resource/BadAppleOS/os.img).
+## No Grub
 
-To build, see `Makefile`, then create a new VMware virtual machine (or other virtual machines) with the build `os.img` as floppy image.
+```bash
+make img
+```
 
-You can also burn it on your USB, and enjoy the BadApple on your real computer :)
+Run `make qemu` to load the OS under QEMU.
+
+## Grub
+
+```bash
+make docker
+make grub_iso
+```
+
+The docker step is sometimes necessary, because `grub-mkrescue` may not work properly under some systems.
+
+Run `make qemu_iso` to load the OS under QEMU.
 
 # License 
 

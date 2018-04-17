@@ -97,9 +97,9 @@ void video::join(int x, int y) {
 void video::artify() {
   const int dxy[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-  const char dot_chars[4] = {'\'', '`', ',', '.'};
-  const char line_chars[4] = {'\\', '/', char(28), '^'};
-  const char dense_chars[5] = {'N', 'H', '#', '*', '&'};
+  const char dot_chars[] = {'\'', '`', ',', '.'};
+  const char line_chars[] = {'\\', '/', char(28), '^'};
+  const char dense_chars[] = {'#', '*', '&', '%'};
   const int dense_count = sizeof(dense_chars) / sizeof(char);
 
   dsu.resize(VIDEO_SIZE);

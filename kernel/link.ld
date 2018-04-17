@@ -1,27 +1,29 @@
-entry = 0x10000;    /* physical address of entry point. */
+phys = 0x10000;    /* physical address of entry point. */
 
-ENTRY(entry)
 STARTUP(begin.o)
+
 SECTIONS
 {
   . = 0xc0000000;
 
-  .text : {
-    code = .;
-    *(.code)
-    . = ALIGN(4);
-    *(.text)
-    *(.rodata)
-    . = ALIGN(4);
+  .mbheader ALIGN(4) : AT(phys) {
+    mbheader = .;
+    *(.mbheader)
   }
 
-  .data : {
+  .text ALIGN(4) : AT(phys + (code - mbheader)) {
+    code = .;
+    *(.text .text.*)
+    *(.rodata .rodata.*)
+  }
+
+  .data ALIGN(4) : AT(phys + (data - mbheader)) {
     data = .;
     *(.data)
-    . = ALIGN(4);
   }
 
-  .ctors : {
+  .ctors ALIGN(4) : AT(phys + (ctors - mbheader)) {
+    ctors = .;
     ___CTOR_LIST__ = .;
     LONG((___CTOR_END__ - ___CTOR_LIST__) / 4 - 2)
     *(.ctors)
@@ -35,14 +37,15 @@ SECTIONS
     ___INIT_ARRAY_END__ = .;
 
     /* dtor omitted. */
-
-    . = ALIGN(4);
   }
 
-  .bss : {
+  .bss ALIGN(4) : AT(phys + (bss - mbheader)) {
     bss = .;
     *(.bss)
-    . = ALIGN(4);
+  }
+
+  /DISCARD/ : {
+    *(.eh_frame .note.GNU-stack)
   }
 
   end = .;

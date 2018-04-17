@@ -1,7 +1,7 @@
-*.swp
 *.bin
+*.elf
 *.img
 *.o
-*.pdf
 dump.txt
-*~
+
+build/

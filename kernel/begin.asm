@@ -1,9 +1,19 @@
 [extern _kinitialize]
 [extern _tmp_pgdir]
-[section .text]
 [bits 32]
 
+[section .mbheader]
+mbheader:
+  dd 0x1badb002
+  dd 0x0
+  dd 0xe4524ffe
+
+[section .text]
 begin:
+  ; initialize kernel stack
+  mov ebp, 0x10000
+  mov esp, ebp
+
   ; initialize paging, notice cr3 requires physical address, so we need to
   ; translate _tmp_pgdir from virtual address to physical address.
   mov eax, _tmp_pgdir

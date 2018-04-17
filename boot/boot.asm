@@ -67,12 +67,8 @@ start_32:
   mov gs, ax
   mov ss, ax
 
-  ; initialize kernel stack
-  mov ebp, 0x10000
-  mov esp, ebp
-
   ; execute kernel
-  jmp 0x10000
+  jmp 0x1000c
 
 [bits 16]
 
