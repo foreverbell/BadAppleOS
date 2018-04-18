@@ -6,7 +6,7 @@ entry:
   dw 0xeb04
 
   ; populated by link.py
-  kernel_sectors  dw 0
+  kernel_sectors dw 0
 
   ; clear cs
   jmp 0x0:start_16
@@ -35,9 +35,8 @@ start_16:
   ; detect floppy or disk
   call detect
 
-  mov ax, [kernel_sectors]
-
   ; load kernel to 0x10000
+  mov ax, [kernel_sectors]
   push 1
   push 0x1000
   push ax

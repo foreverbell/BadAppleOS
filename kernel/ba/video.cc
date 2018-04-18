@@ -40,7 +40,7 @@ video::video() {
   const uint16_t bkcolor1 = console::mkcolor(console::vga_color::white, console::vga_color::black);
   const uint16_t bkcolor2 = console::mkcolor(console::vga_color::black, console::vga_color::white);
 #else
-  const uint16_t acolor = console::mkcolor(console::vga_color::white, console::vga_color::black);
+  const uint16_t acolor = console::mkcolor(console::vga_color::light_grey, console::vga_color::black);
 #endif
 
   decompressor decomp(vdatas, vdatae);
@@ -99,7 +99,7 @@ void video::artify() {
 
   const char dot_chars[] = {'\'', '`', ',', '.'};
   const char line_chars[] = {'\\', '/', char(28), '^'};
-  const char dense_chars[] = {'#', '*', '&', '%'};
+  const char dense_chars[] = {'?', '*', '%'};
   const int dense_count = sizeof(dense_chars) / sizeof(char);
 
   dsu.resize(VIDEO_SIZE);

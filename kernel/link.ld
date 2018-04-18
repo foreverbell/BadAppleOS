@@ -4,7 +4,7 @@ STARTUP(begin.o)
 
 SECTIONS
 {
-  . = 0xc0000000;
+  . = 0xc0010000;  /* virtual address of kernel. */
 
   /* AT(phys) for load memory address of this section. */
   .mbheader ALIGN(4) : AT(phys) {
@@ -36,8 +36,6 @@ SECTIONS
     *(.init_array)
     LONG(0)
     ___INIT_ARRAY_END__ = .;
-
-    /* dtor omitted. */
   }
 
   .bss ALIGN(4) : AT(phys + (bss - mbheader)) {

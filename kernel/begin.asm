@@ -8,21 +8,32 @@ mbheader:
   dd 0x0
   dd 0xe4524ffe
 
+KERNEL_LMA equ 0x10000
+KERNEL_VMA equ 0xc0010000
+CR0_PE     equ 0x1
+CR0_PG     equ 0x80000000
+CR4_PSE    equ 0x10
+
+%define VA2PA(x) ((x) - KERNEL_VMA + KERNEL_LMA)
+
 [section .text]
 begin:
-  ; initialize kernel stack
-  mov ebp, 0x10000
+  ; initialize kernel stack (reuse memory below LMA)
+  mov ebp, KERNEL_LMA
   mov esp, ebp
 
-  ; initialize paging, notice cr3 requires physical address, so we need to
-  ; translate _tmp_pgdir from virtual address to physical address.
-  mov eax, _tmp_pgdir
-  sub eax, 0xc0000000  ; 0xc0000000 is kernel base virtual address
-  add eax, 0x10000     ; 0x10000 is the physical address that kernel loaded to
+  ; turn on page size extension (PSE) for 4Mbytes pages
+  mov eax, cr4
+  or  eax, CR4_PSE
+  mov cr4, eax
+
+  ; initialize paging, notice cr3 requires physical address
+  mov eax, VA2PA(_tmp_pgdir)
   mov cr3, eax
 
+  ; turn on paging
   mov eax, cr0
-  or eax, 0x80000001   ; CR0_PG | CR0_PE
+  or  eax, CR0_PE | CR0_PG
   mov cr0, eax
 
   jmp _kinitialize

@@ -1,7 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import os, sys
+
+def little_endian(n):
+  xs = []
+  for i in xrange(4):
+    xs.append(n % 256)
+    n /= 256
+  return xs
 
 if __name__ == "__main__":
   boot = sys.argv[1]
@@ -9,27 +15,24 @@ if __name__ == "__main__":
   output = sys.argv[3]
 
   boot_size = os.stat(boot).st_size
-  kernel_size = os.stat(kernel).st_size
+  old_kernel_size = os.stat(kernel).st_size
+  kernel_size = (old_kernel_size + 512 - 1) / 512 * 512
 
-  assert boot_size == 512
+  if boot_size != 512:
+    print("Size of boot loader is not 512.")
+    sys.exit(1)
 
-  new_kernel_size = (kernel_size + 512 - 1) / 512 * 512
-
-  print("Kernel size %d -> %d." % (kernel_size, new_kernel_size))
+  print("Kernel size %d -> %d." % (old_kernel_size, kernel_size))
   with open(kernel, "ab") as f:
-    padding = new_kernel_size - kernel_size
-    assert padding >= 0
+    padding = kernel_size - old_kernel_size
     f.write(bytearray(padding))
 
   print("Populating kernel_sectors in bootloader.")
   with open(boot, "r+b") as f:
     f.seek(2)
-    assert new_kernel_size % 512 == 0
-    nsectors = new_kernel_size / 512
-    print("nsectors = %d." % nsectors)
-    bytes2 = [nsectors % 256, nsectors / 256]
-    f.write(bytearray(bytes2))
+    byte2 = little_endian(kernel_size / 512)[:2]
+    f.write(bytearray(byte2))
 
   os.system("cat %s %s > %s" % (boot, kernel, output))
 
-  print "\033[92mDone!\033[0m"
+  print("\033[92mDone!\033[0m")

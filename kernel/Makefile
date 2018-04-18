@@ -1,7 +1,7 @@
 ASFLAGS := -f elf
 CFLAGS := -O2 -ffreestanding -fno-builtin -fno-pic -nostdinc -fno-exceptions -fleading-underscore -I./include -I./stl -Wall -Wextra
 CCFLAGS := -std=c++11 -fno-rtti $(CFLAGS)
-LDFLAGS := -T link.ld -m elf_i386
+LDFLAGS := -n -T link.ld -m elf_i386
 OCFLAGS := -O binary
 
 AS := nasm
