@@ -8,7 +8,6 @@ namespace timer {
 #define TIMER_INVALID_HANDLE  NULL
 
 #define TIMER_TICK_PER_SECOND 18
-#define TIMER_TICK_ONE_SHOT   0
 
 typedef void* handle_t;
 typedef void (* fn_timer_callback_t)(uint64_t, handle_t);

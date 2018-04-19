@@ -32,19 +32,17 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
   timer_callback_link_t *cur = timer_head;
 
   while (cur != NULL) {
-    if (cur->interval != TIMER_TICK_ONE_SHOT) {
-      cur->count_down -= 1;
-    }
+    cur->count_down -= 1;
 
-    bool to_remove = (cur->deleted || cur->interval == TIMER_TICK_ONE_SHOT);
-    bool to_call = !cur->deleted && (cur->count_down == 0 || cur->interval == TIMER_TICK_ONE_SHOT);
+    bool should_remove = cur->deleted;
+    bool should_call = !cur->deleted && cur->count_down == 0;
 
-    if (to_call) {
+    if (should_call) {
       cur->lpfn_timer_callback(cur->trigger_count, (handle_t) cur);
       cur->trigger_count += 1;
       cur->count_down = cur->interval;
     }
-    if (to_remove) {
+    if (should_remove) {
       if (timer_head == cur) {
         timer_head = cur->next;
       }
@@ -63,7 +61,6 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
   }
 
   if (++ticks >= TIMER_TICK_PER_SECOND) {
-    // printf("One second has passed.\n");
     ticks = 0;
   }
 }
@@ -81,7 +78,7 @@ void initialize(void) {
   port::outb(PORT_PIT_CHANNEL0, 0);
   port::outb(PORT_PIT_CHANNEL0, 0);
 
-  /* install and enable corespond IRQ. */
+  /* install and enable coresponding IRQ. */
   irq::install(0, handler);
   irq::enable(0);
 }
@@ -114,8 +111,12 @@ handle_t add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
 }
 
 bool remove(handle_t ptr) {
+  int_guard guard;
   timer_callback_link_t *timer_ptr = (timer_callback_link_t *) ptr;
 
+  if (timer_ptr->deleted) {
+    return false;
+  }
   timer_ptr->deleted = true;
   return true;
 }
