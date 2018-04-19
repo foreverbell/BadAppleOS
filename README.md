@@ -2,18 +2,20 @@
 
 # Description
 
-Displaying [BadApple](https://www.youtube.com/watch?v=VzEUeWnV73U) animation in the protected mode of a x86 operating system.
+Displaying [BadApple](https://www.youtube.com/watch?v=VzEUeWnV73U) animation in the protected mode of an x86 operating system.
 
-This operating system is quite rough, even it doesn't have a file system, task scheduler and other more advance things.
+This operating system is quite rough, even it doesn't have a file system, task scheduler and other more advanced things.
 
-So it is not an operating system indeed, just a program running on a bare computer lol :)
+So it is not an operating system indeed, just a program running on a bare computer LOL :)
 
 # Highlight
 
 * Except some necessary booting code written in Assembly and C, other code is purely written in C++(11). 
 * A minimal STL port.
 * Artify the plain text to a great ASCII Art. 
-* ... and this operating system is only 180K (depends on your compiler)!
+* ... and this operating system is only 168K (depends on your compiler)!
+
+Notice you may see some weird designs in this OS, this is because one of our preliminary goal is to make it fit into a floppy.
 
 # Toolchains
 
@@ -27,7 +29,9 @@ I don't guarantee other versions of toolchains will work.
 
 # Build
 
-## No Grub
+BadAppleOS is multi-boot compliant, so you can boot it with GRUB. We also provide a minimal bootloader without GRUB.
+
+## No GRUB
 
 ```bash
 make img
@@ -35,7 +39,7 @@ make img
 
 Run `make qemu` to load the OS under QEMU.
 
-## Grub
+## GRUB
 
 ```bash
 make docker
