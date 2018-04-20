@@ -35,7 +35,7 @@ void ctors(void) {
   puts("[ctor] Initializing.");
   count += wkctor(lpfn_inta_ptr);
   count += wkctor(lpfn_ctor_ptr);
-  printf("Total %d ctors initialized.\n", count);
+  printf("[ctor] %d ctors initialized.\n", count);
 }
 
 } /* abi */

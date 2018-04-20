@@ -8,7 +8,7 @@ namespace console {
 #define VIDEO_BASE        0xb8000
 #define VIDEO_MAX_ROW     25
 #define VIDEO_MAX_COLUMN  80
-#define VIDEO_SIZE        2000 // 25*80
+#define VIDEO_SIZE        (VIDEO_MAX_ROW * VIDEO_MAX_COLUMN)
 
 namespace vga_color {
 
@@ -36,7 +36,7 @@ const int default_fore_color = vga_color::light_grey;
 
 int mkcolor(int, int);  // fore, back
 void setcolor(int, bool);
-void initialize(bool, bool);
+void initialize(bool);
 void clear(void);
 void bkcopy(const uint16_t *);
 void putch(char);

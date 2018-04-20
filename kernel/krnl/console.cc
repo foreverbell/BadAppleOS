@@ -8,11 +8,12 @@
 namespace console {
 
 /*
- * ------------------> y (80)
- * | > _             |
- * |     console     |
- * |                 |
- * x-----------------x (25)
+ *  ------------------> y (80)
+ *  | > _             |
+ *  |     console     |
+ *  |                 |
+ *  x-----------------x
+ * (25)
  */
 
 namespace {
@@ -22,47 +23,47 @@ int attrib;
 namespace cursor {
 
 int X, Y;
-bool has;
+bool show_cursor;
 int vport; // base IO port for video, usually 0x3d4
 
-void update(void) {
-  if (has) {
-    int temp = X * VIDEO_MAX_COLUMN + Y;
+void move(int x, int y) {
+  int offset = x * VIDEO_MAX_COLUMN + y;
 
-    port::outb(vport, 14);
-    port::outb(vport | 1, temp >> 8);
-    port::outb(vport, 15);
-    port::outb(vport | 1, temp);
+  port::outb(vport, 14);
+  port::outb(vport | 1, offset >> 8);
+  port::outb(vport, 15);
+  port::outb(vport | 1, offset);
+}
+
+void push(void) {
+  if (show_cursor) {
+    move(X, Y);
   }
 }
 
-void synchronize(void) {
-  if (has) {
-    int offset = 0;
+void pull(void) {
+  int offset = 0;
 
-    port::outb(vport, 14);
-    offset = port::inb(vport | 1) << 8;
-    port::outb(vport, 15);
-    offset += port::inb(vport | 1);
+  port::outb(vport, 14);
+  offset = port::inb(vport | 1) << 8;
+  port::outb(vport, 15);
+  offset += port::inb(vport | 1);
 
-    X = offset / VIDEO_MAX_COLUMN;
-    Y = offset % VIDEO_MAX_COLUMN;
-  }
+  X = offset / VIDEO_MAX_COLUMN;
+  Y = offset % VIDEO_MAX_COLUMN;
 }
 
 } /* cursor */
 
 uint16_t *get_cell_ptr(int row, int col) {
+  uint16_t *base = (uint16_t *) VIDEO_BASE;
   if (row < 0 || row >= VIDEO_MAX_ROW) {
     return NULL;
   }
   if (col < 0 || col > VIDEO_MAX_COLUMN) {
     return NULL;
   }
-  int offset = col + row * VIDEO_MAX_COLUMN;
-  uint16_t *ret = (uint16_t *) VIDEO_BASE;
-  ret += offset;
-  return ret;
+  return base + col + row * VIDEO_MAX_COLUMN;
 }
 
 void scroll(void) {
@@ -99,23 +100,13 @@ void setcolor(int color, bool reset) {
   attrib = color;
 }
 
-void initialize(bool cursor, bool blink) {
+void initialize(bool show_cursor) {
   cursor::vport = *(uint16_t *) 0x463;
-  cursor::has = cursor;
-  if (!cursor) {
-    /* disable cursor. */
-    port::outb(cursor::vport, 0xe);
-    port::outb(cursor::vport | 1, (2000 >> 8) & 0xff);
-    port::outb(cursor::vport, 0xf);
-    port::outb(cursor::vport | 1, 2000 & 0xff);
-  }
-  cursor::synchronize();
-
-  if (!blink) {
-    /* (undocumented) disable blinking text, see http://f.osdev.org/viewtopic.php?f=1&t=22632. */
-    port::inb(0x3da);
-    port::outb(0x3c0, 0x30);
-    port::outb(0x3c0, port::inb(0x3c1) & 0xf7);
+  cursor::show_cursor = show_cursor;
+  cursor::pull();
+  if (!show_cursor) {
+    /* disable cursor by hiding it. */
+    cursor::move(VIDEO_MAX_ROW, 0);
   }
 
   attrib = mkcolor(default_fore_color, default_back_color);
@@ -132,7 +123,7 @@ void clear(void) {
   }
 
   cursor::X = cursor::Y = 0;
-  cursor::update();
+  cursor::push();
   port::wait();
 }
 
@@ -140,7 +131,7 @@ void bkcopy(const uint16_t *src) {
   memcpy((void *) VIDEO_BASE, (void *) src, VIDEO_SIZE * 2);
 
   cursor::X = cursor::Y = 0;
-  cursor::update();
+  cursor::push();
 }
 
 void putch(char ch) {
@@ -173,7 +164,7 @@ void putch(char ch) {
     scroll();
     cursor::X -= 1;
   }
-  cursor::update();
+  cursor::push();
 }
 
 } /* console */

@@ -21,7 +21,7 @@ void idle(void) {
 
 asmlinkage void kinitialize(void) {
   /* console: no cursor, and no blink text. */
-  console::initialize(false, false);
+  console::initialize(false);
   puts("Successfully landed to protected mode.");
 
   gdt::initialize();
