@@ -34,6 +34,11 @@ namespace {
 #define IRQ_VECTOR_OFFSET 32
 #define MAX_IRQ_ENTRY     16
 
+#define PORT_MASTER_PIC_CMD 0x20
+#define PORT_MASTER_PIC_DAT 0x21
+#define PORT_SLAVE_PIC_CMD  0xa0
+#define PORT_SLAVE_PIC_DAT  0xa1
+
 fn_irq_handler_t lpfn_irq_handler[MAX_IRQ_ENTRY];
 
 void dispatcher(irq_context_t *ptr) {
@@ -69,7 +74,7 @@ void initialize(void) {
   port::outb(PORT_MASTER_PIC_DAT, 0xff);
   port::outb(PORT_SLAVE_PIC_DAT, 0xff);
 
-  /* initialize ISR to correct entries in the IDT. */
+  /* initialize IRQ to correct entries in the IDT. */
 #define set_irq(n) idt::set_gate(n + IRQ_VECTOR_OFFSET, (uint32_t) irq_handler##n, KERNEL_CODE_SEL, 0x8e);
   set_irq(0);
   set_irq(1);
@@ -136,24 +141,6 @@ void enable(int index) {
   }
   value = port::inb(port) & ~(1 << index);
   port::outb(port, value);
-}
-
-void disable_mask(int mask) {
-  for (int i = 0; i < 16; ++i) {
-    if (mask & 1) {
-      disable(i);
-    }
-    mask >>= 1;
-  }
-}
-
-void enable_mask(int mask) {
-  for (int i = 0; i < 16; ++i) {
-    if (mask & 1) {
-      enable(i);
-    }
-    mask >>= 1;
-  }
 }
 
 } /* irq */

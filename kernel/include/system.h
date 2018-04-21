@@ -33,7 +33,7 @@ struct irq_context_t {
     uint32_t gs, fs, es, ds;
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
     uint32_t irq_index;
-    uint32_t eip, cs, eflags, user_esp, ss;
+    uint32_t eip, cs, eflags;
 } __attribute__((packed));
 #pragma pack(pop)
 
@@ -44,8 +44,6 @@ void install(int, fn_irq_handler_t);
 void uninstall(int);
 void enable(int);
 void disable(int);
-void enable_mask(int);
-void disable_mask(int);
 
 } /* irq */ 
 

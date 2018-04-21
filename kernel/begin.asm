@@ -36,4 +36,6 @@ begin:
   or  eax, CR0_PE | CR0_PG
   mov cr0, eax
 
-  jmp _kinitialize
+  ; directly jump to C++ main, use "jmp eax" to avoid relative jump
+  mov eax, _kinitialize
+  jmp eax

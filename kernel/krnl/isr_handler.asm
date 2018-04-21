@@ -4,8 +4,8 @@
   global _isr_handler%1
   _isr_handler%1:
     cli
-    push 0      ; dummy error code
-    push %1     ; exception index
+    push 0          ; dummy error code
+    push %1         ; exception index
     jmp isr_routine
 %endmacro
 
@@ -43,7 +43,8 @@ isr_routine:
   push es
   push fs
   push gs
-  push esp      ; as parameter of isr_dispatcher
+  push esp      ; pointer to all stuffs we have pushed, wraps everything on
+                ; stack into one struct pointer
   call _isr_dispatcher
   pop esp
   pop gs

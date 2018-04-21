@@ -1,5 +1,7 @@
 [extern _irq_dispatcher]
 
+KRNL_DATA_SEL equ 0x10
+
 %macro irq 1
   global _irq_handler%1
   _irq_handler%1:
@@ -31,12 +33,13 @@ irq_routine:
   push es
   push fs
   push gs
-  mov eax, 0x10  ; load kernel data segment
-  mov ds, eax    ; load to the segment registers
+  mov eax, KRNL_DATA_SEL
+  mov ds, eax
   mov es, eax
   mov fs, eax
   mov gs, eax
-  push esp       ; pointer to all stuff we have pushed, passed to irq_dispatcher
+  push esp       ; pointer to all stuffs we have pushed, wraps everything on
+                 ; stack into one struct pointer
   call _irq_dispatcher
   pop esp
   pop gs

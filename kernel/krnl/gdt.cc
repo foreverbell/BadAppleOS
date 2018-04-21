@@ -1,4 +1,5 @@
 #include <system.h>
+
 #include <stdint.h>
 #include <string.h>
 
@@ -28,6 +29,7 @@ gdt_entry_t gdt[MAX_GDT_ENTRY];
 gdt_descriptior_t gdt_ptr;
 
 void flush(void) {
+  /* initialize gdt ptr. */
   gdt_ptr.limit = sizeof(gdt) - 1;
   gdt_ptr.base = (uint32_t) gdt;
 
@@ -59,10 +61,6 @@ void set_gate(int index, uint32_t base, uint32_t limit, uint8_t access, uint8_t 
 void initialize(void) {
   /* initialize all gdt entries. */
   memset(gdt, 0, sizeof(gdt));
-
-  /* initialize gdt ptr. */
-  gdt_ptr.limit = sizeof(gdt) - 1;
-  gdt_ptr.base = (uint32_t) gdt;
 
   /* setup gdt gates. */
   set_gate(0, 0, 0x0, 0x0, 0x0); // null gdt entry

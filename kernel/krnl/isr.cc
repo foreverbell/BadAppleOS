@@ -59,18 +59,23 @@ const char *exception_message[] = {
 struct isr_context_t {
   uint32_t gs, fs, es, ds;
   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-  uint32_t exception, error_code;
-  uint32_t eip, cs, eflags, user_esp, ss;
+  uint32_t isr_index, error_code;
+  uint32_t eip, cs, eflags;
 } __attribute__((packed));
 #pragma pack(pop)
 
 void dispatcher(isr_context_t *ptr) {
-  printf("Exception: %s, with error code: %d\n", exception_message[ptr->exception], ptr->error_code);
+  printf("Exception = %s, with error code = %d.\n",
+         exception_message[ptr->isr_index], ptr->error_code);
   printf("Registers:\n");
-  printf("\tcs=0x%x, ds=0x%x, es=0x%x, fs=0x%x, gs=0x%x, ss=0x%x\n", ptr->cs, ptr->ds, ptr->es, ptr->fs, ptr->gs, ptr->ss);
-  printf("\teax=0x%x, ebx=0x%x, ecx=0x%x, edx=0x%x\n", ptr->eax, ptr->ebx, ptr->ecx, ptr->edx);
-  printf("\tesp=0x%x, ebp=0x%x, esi=0x%x, edi=0x%x\n", ptr->esp, ptr->ebp, ptr->esi, ptr->edi);
-  printf("\teip=0x%x, user_esp=0x%x, eflags=0x%x\n", ptr->eip, ptr->user_esp, ptr->eflags);
+  printf("\tds  0x%08x\tes  0x%08x\tfs  0x%08x\tgs  0x%08x\n",
+         ptr->ds, ptr->es, ptr->fs, ptr->gs);
+  printf("\teax 0x%08x\tebx 0x%08x\tecx 0x%08x\tedx 0x%08x\n",
+         ptr->eax, ptr->ebx, ptr->ecx, ptr->edx);
+  printf("\tesp 0x%08x\tebp 0x%08x\tesi 0x%08x\tedi 0x%08x\n",
+         ptr->esp, ptr->ebp, ptr->esi, ptr->edi);
+  printf("\teip 0x%08x\tcs  0x%08x\teflags 0x%08x\n",
+         ptr->eip, ptr->cs, ptr->eflags);
 
   printf("System halted.\n");
   cpu::manipulate::die();

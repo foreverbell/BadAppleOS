@@ -14,6 +14,11 @@ namespace timer {
 
 namespace {
 
+#define PORT_PIT_CHANNEL0   0x40
+#define PORT_PIT_CHANNEL1   0x41
+#define PORT_PIT_CHANNEL2   0x42
+#define PORT_PIT_CMD        0x43
+
 struct timer_callback_link_t {
   /* all measured in tick, not second. */
   uint64_t interval, trigger_count, count_down;

@@ -28,9 +28,9 @@ struct idt_descriptior_t {
 } __attribute__((packed));
 #pragma pack(pop)
 
-const int max_idt_entry = 256;
+#define MAX_IDT_ENTRY 256
 
-idt_entry_t idt[max_idt_entry];
+idt_entry_t idt[MAX_IDT_ENTRY];
 idt_descriptior_t idt_ptr;
 
 void flush(void) {

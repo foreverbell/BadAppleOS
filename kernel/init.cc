@@ -24,8 +24,8 @@ asmlinkage void kinitialize(void) {
   console::initialize(false);
   puts("Successfully landed to protected mode.");
 
-  gdt::initialize();
   mm::initialize();
+  gdt::initialize();
   idt::initialize();
   isr::initialize();
   irq::initialize();
@@ -43,3 +43,4 @@ asmlinkage void kinitialize(void) {
   /* execute idle process. */
   idle();
 }
+
