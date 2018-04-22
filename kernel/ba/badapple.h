@@ -20,7 +20,7 @@ private:
 
 class decompressor {
 public:
-  decompressor(const uint8_t *vdatae, const uint8_t *vdatas);
+  decompressor(const uint8_t *, const uint8_t *);
   ~decompressor();
 
   int frame_count() const { return count; }

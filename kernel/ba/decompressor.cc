@@ -55,9 +55,9 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
   buffer_size = read(vdatas + 2, 4);
   key_count = read(vdatas + 6, 1);
 
-  printf("[decompressor] frame count = %d.\n", count);
-  printf("[decompressor] buffer size = %d.\n", buffer_size);
-  printf("[decompressor] key count = %d.\n", key_count);
+  printf("[decompressor] Frame count = %d.\n", count);
+  printf("[decompressor] Buffer size = %d.\n", buffer_size);
+  printf("[decompressor] Key count = %d.\n", key_count);
 
   buffer = new uint8_t[buffer_size];
   buffer_end = buffer + buffer_size;
@@ -95,7 +95,7 @@ decompressor::decompressor(const uint8_t *vdatas, const uint8_t *vdatae) {
 
     btrie::free(&btrie::root);
 
-    printf("[decompressor] remaining %d bits.\n", reader.remain());
+    printf("[decompressor] Remaining %d bits.\n", reader.remain());
 
   } mm::log_status(MM_LOG_NOISY);
 }

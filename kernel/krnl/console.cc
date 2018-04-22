@@ -132,6 +132,7 @@ void bkcopy(const uint16_t *src) {
 
   cursor::X = cursor::Y = 0;
   cursor::push();
+  port::wait();
 }
 
 void putch(char ch) {

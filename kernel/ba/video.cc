@@ -188,13 +188,19 @@ void video::artify() {
           }
         }
         if (dir != -1) {
-          char to_replace = dot_chars[dir];
-          if (empty <= 2 &&
-            at(f, x + dxy[(3 - dir) ^ 1][0], y + dxy[(3 - dir) ^ 1][1]) != ' ' &&
-            at(f, x + dxy[3 - dir][0], y + dxy[3 - dir][1]) != ' ') {
-              to_replace = line_chars[dir];
+          bool use_line = true;
+          if (empty > 2) {
+            use_line = false;
           }
-          set(f, x, y, to_replace);
+          if (within(x + dxy[(3 - dir) ^ 1][0], y + dxy[(3 - dir) ^ 1][1]) &&
+              at(f, x + dxy[(3 - dir) ^ 1][0], y + dxy[(3 - dir) ^ 1][1]) == ' ') {
+            use_line = false;
+          }
+          if (within(x + dxy[3 - dir][0], y + dxy[3 - dir][1]) &&
+              at(f, x + dxy[3 - dir][0], y + dxy[3 - dir][1]) == ' ') {
+            use_line = false;
+          }
+          set(f, x, y, use_line ? line_chars[dir] : dot_chars[dir]);
         }
       }
     }
