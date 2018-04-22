@@ -12,18 +12,32 @@ namespace manipulate {
 namespace {
 
 int cli_count = 1;
+bool int_aon = true;  // true if interrupt if already enabled
+
+#define FLAGS_IF 0x200
+
+uint32_t readeflags(void) {
+  uint32_t eflags;
+  __asm__ __volatile__ ("pushfl; popl %0" : "=r" (eflags));
+  return eflags;
+}
 
 }
 
 void cli(void) {
-  cli_count += 1;
+  uint32_t eflags = readeflags();
   __asm__ __volatile__ ("cli");
+  if (cli_count == 0) {
+    int_aon = eflags & FLAGS_IF;
+  }
+  cli_count += 1;
 }
 
 void sti(void) {
   cli_count -= 1;
   assert(cli_count >= 0);
-  if (cli_count == 0) {
+  if (cli_count == 0 && int_aon) {
+    int_aon = false;
     __asm__ __volatile__ ("sti");
   }
 }

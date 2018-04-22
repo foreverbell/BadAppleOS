@@ -31,11 +31,11 @@ asmlinkage void kinitialize(void) {
   irq::initialize();
   timer::initialize();
 
-  /* call all C++ constructors. */
-  abi::ctors();
-
   /* enable interrupt. */
   cpu::manipulate::sti();
+
+  /* call all C++ constructors. */
+  abi::ctors();
 
   /* play our BadApple animation. */
   play();

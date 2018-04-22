@@ -19,10 +19,10 @@ namespace {
 #define PORT_PIT_CHANNEL2   0x42
 #define PORT_PIT_CMD        0x43
 
-struct timer_callback_link_t {
+struct timer_callback_node_t {
   /* all measured in tick, not second. */
   uint64_t interval, trigger_count, count_down;
-  timer_callback_link_t *prev, *next;
+  timer_callback_node_t *prev, *next;
   fn_timer_callback_t lpfn_timer_callback;
   bool deleted;
 } *timer_head;
@@ -30,11 +30,9 @@ struct timer_callback_link_t {
 uint64_t system_tick;
 
 void handler(irq::irq_context_t * /*context_ptr*/) {
-  static uint32_t ticks = 0;
-
   system_tick += 1;
 
-  timer_callback_link_t *cur = timer_head;
+  timer_callback_node_t *cur = timer_head;
 
   while (cur != NULL) {
     cur->count_down -= 1;
@@ -57,16 +55,12 @@ void handler(irq::irq_context_t * /*context_ptr*/) {
       if (cur->next != NULL) {
         cur->next->prev = cur->prev;
       }
-      timer_callback_link_t *next = cur->next;
+      timer_callback_node_t *next = cur->next;
       delete cur;
       cur = next;
     } else {
       cur = cur->next;
     }
-  }
-
-  if (++ticks >= TIMER_TICK_PER_SECOND) {
-    ticks = 0;
   }
 }
 
@@ -93,8 +87,12 @@ uint64_t get_system_tick(void) {
 }
 
 handle_t add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
+  if (interval == 0) {
+    return TIMER_INVALID_HANDLE;
+  }
+
   int_guard guard;
-  timer_callback_link_t *ptr = new timer_callback_link_t();
+  timer_callback_node_t *ptr = new timer_callback_node_t();
 
   if (ptr == NULL) {
     return TIMER_INVALID_HANDLE;
@@ -117,7 +115,7 @@ handle_t add(uint64_t interval, fn_timer_callback_t lpfn_callback) {
 
 bool remove(handle_t ptr) {
   int_guard guard;
-  timer_callback_link_t *timer_ptr = (timer_callback_link_t *) ptr;
+  timer_callback_node_t *timer_ptr = (timer_callback_node_t *) ptr;
 
   if (timer_ptr->deleted) {
     return false;
