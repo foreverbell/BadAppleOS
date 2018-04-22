@@ -4,8 +4,8 @@
 static unsigned long int next = 1;
 
 int rand(void) {
-  next = next * 1103515245 + 12345;
-  return (unsigned int) (next / 65536) % 32768;
+  next = next * 214013L + 2531011L;
+  return (unsigned int) (next >> 16) & 0x7fff;
 }
 
 void srand(unsigned int seed) {

@@ -1,11 +1,11 @@
-#include <timer.h>
-#include <memory.h>
 #include <console.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <systime.h>
-#include <vector>
+#include <memory.h>
 #include <pair>
+#include <stdint.h>
+#include <stdio.h>
+#include <systime.h>
+#include <timer.h>
+#include <vector>
 #include "badapple.h"
 
 using systime::systime_t;
