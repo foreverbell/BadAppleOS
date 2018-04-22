@@ -29,7 +29,7 @@ int stream::nextb() {
 }
 
 int stream::remain() const {
-  return (pool_end - seek - 1) * 8 + (8 - shift);
+  return (pool_end - seek) * 8 - shift;
 }
 
 } /* badapple */

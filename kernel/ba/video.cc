@@ -32,7 +32,6 @@ void video::next() {
 
 void video::free(void) {
   delete [] pool;
-  // free(pool);
 }
 
 video::video() {
@@ -49,7 +48,6 @@ video::video() {
 
   cur_frame = 0;
   count = decomp.frame_count();
-  // pool = (uint16_t *) malloc(count * VIDEO_SIZE * 2);
   pool = new uint16_t[count * VIDEO_SIZE];
 
   printf("[video] Frame count = %d.\n", count);
