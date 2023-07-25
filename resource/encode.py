@@ -40,7 +40,7 @@ def encode(s, ch):
   while (len(s) % 8 != 0):
     s += ch
   lst = []
-  for i in range(0, len(s) / 8):
+  for i in range(0, len(s) // 8):
     n = 0
     for j in range(0, 8):
       k = i * 8 + j
