@@ -11,7 +11,7 @@ class hnode(object):
 
 def build(freq):
   queue = []
-  for i in xrange(0, 256):
+  for i in range(0, 256):
     if (freq[i] != 0):
       heappush(queue, (freq[i], i))
   while (len(queue) > 1):
@@ -40,9 +40,9 @@ def encode(s, ch):
   while (len(s) % 8 != 0):
     s += ch
   lst = []
-  for i in xrange(0, len(s) / 8):
+  for i in range(0, len(s) / 8):
     n = 0
-    for j in xrange(0, 8):
+    for j in range(0, 8):
       k = i * 8 + j
       n |= (1 if (s[k] == ch) else 0) << j
     lst.append(n)
