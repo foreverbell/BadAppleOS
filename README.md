@@ -4,26 +4,26 @@
 
 Displaying [BadApple](https://www.youtube.com/watch?v=VzEUeWnV73U) animation in the protected mode of an x86 operating system.
 
-This operating system is quite rough, even it doesn't have a file system, task scheduler and other more advanced things.
+This operating system is quite rough - it doesn't have a file system, task scheduler and other more advanced things.
 
 So it is not an operating system indeed, just a program running on a bare computer LOL :)
 
 # Highlight
 
-* Except some necessary booting code written in Assembly and C, other code is purely written in C++(11). 
+* Except some necessary booting codes written in Assembly and C, other codes are purely written in C++(11).
 * A minimal STL port.
-* Artify the plain text to a great ASCII Art. 
+* Artify plain texts to a great ASCII Art.
 * ... and this operating system is only 168K (depends on your compiler)!
 
-Notice you may see some weird designs in this OS, this is because one of our preliminary goal is to make it fit into a floppy.
+Notice you may see some weird designs in this OS, this is because our preliminary goal is to make it fit into a floppy.
 
 # Toolchains
 
-Tested under Ubuntu xenial with the following toolchains,
+Tested under Ubuntu 22.04.2 LTS with the following toolchains,
 
-* gcc (5.4.0)
-* nasm (2.11.08)
-* python (2.7.12)
+* gcc (11.3.0)
+* nasm (2.15.05)
+* python (3.9.17)
 
 I don't guarantee other versions of toolchains will work.
 

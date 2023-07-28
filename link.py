@@ -4,9 +4,9 @@ import os, sys
 
 def little_endian(n):
   xs = []
-  for i in xrange(4):
+  for i in range(0, 4):
     xs.append(n % 256)
-    n /= 256
+    n //= 256
   return xs
 
 if __name__ == "__main__":
@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
   boot_size = os.stat(boot).st_size
   old_kernel_size = os.stat(kernel).st_size
-  kernel_size = (old_kernel_size + 512 - 1) / 512 * 512
+  kernel_size = (old_kernel_size + 512 - 1) // 512 * 512
 
   if boot_size != 512:
     print("Size of boot loader is not 512.")
@@ -30,7 +30,7 @@ if __name__ == "__main__":
   print("Populating kernel_sectors in bootloader.")
   with open(boot, "r+b") as f:
     f.seek(2)
-    byte2 = little_endian(kernel_size / 512)[:2]
+    byte2 = little_endian(kernel_size // 512)[:2]
     f.write(bytearray(byte2))
 
   os.system("cat %s %s > %s" % (boot, kernel, output))
