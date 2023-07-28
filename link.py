@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys
+import os
+import sys
+
 
 def little_endian(n):
   xs = []
@@ -8,6 +10,7 @@ def little_endian(n):
     xs.append(n % 256)
     n //= 256
   return xs
+
 
 if __name__ == "__main__":
   boot = sys.argv[1]
